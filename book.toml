@@ -1,0 +1,13 @@
+[book]
+authors = []
+language = "zh"
+multilingual = false
+description = "hvisor 手册"
+src = "src"
+title = "hvisor 手册"
+
+[output.html]
+default-theme = "light"
+git-repository-url = "https://github.com/syswonder/hvisor"
+git-repository-icon = "fa-github"
+additional-js = ["assets/fzf.umd.js", "assets/elasticlunr.js"]
