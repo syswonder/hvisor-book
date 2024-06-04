@@ -38,6 +38,7 @@ jobs:
     - name: Deploy Web
       uses: peaceiris/actions-gh-pages@v3
       with:
+        PERSONAL_TOKEN: ${{ secrets.GUIDEBOOK_TOKEN }}
         EXTERNAL_REPOSITORY: syswonder/hvisor-Book
         PUBLISH_BRANCH: gh-pages
         PUBLISH_DIR: ./
