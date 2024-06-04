@@ -38,8 +38,8 @@ jobs:
     - name: Deploy Web
       uses: peaceiris/actions-gh-pages@v3
       with:
-      EXTERNAL_REPOSITORY: syswonder/hvisor-Book
-      PUBLISH_BRANCH: gh-pages
-      PUBLISH_DIR: ./
-      commit_message: ${{ github.event.head_commit.message }}
-      cname: hvisor.syswonder.org
+        EXTERNAL_REPOSITORY: syswonder/hvisor-Book
+        PUBLISH_BRANCH: gh-pages
+        PUBLISH_DIR: ./
+        commit_message: ${{ github.event.head_commit.message }}
+        cname: hvisor.syswonder.org
