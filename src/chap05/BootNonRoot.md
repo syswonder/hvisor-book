@@ -13,18 +13,18 @@ hvisor对NonRoot的启动做了妥善处理，使得启动较为简单，方式�
 	};
 ```
 
-2. 编译用于 Hvisor 的[内核模块和命令行工具](https://github.com/syswonder/hvisor-tool?tab=readme-ov-file)，将其放置在 Root Linux 的文件系统中。
+3. 编译用于 Hvisor 的[内核模块和命令行工具](https://github.com/syswonder/hvisor-tool?tab=readme-ov-file)，将其放置在 Root Linux 的文件系统中。
 
-3. 启动 Hvisor 的 Root Linux，注入刚才编译好的内核模块：
+4. 启动 Hvisor 的 Root Linux，注入刚才编译好的内核模块：
 
 ```
 insmod hvisor.ko
 ```
 
-4. 使用命令行工具，这里假定其名字为```hvisor```，启动 NonRoot Linux。
+5. 使用命令行工具，这里假定其名字为```hvisor```，启动 NonRoot Linux。
 
 ```
 ./hvisor zone start --kernel 内核镜像,addr=0x70000000 --dtb 设备树文件,addr=0x91000000 --id 虚拟机编号（从1开始指定）
 ```
 
-5. NonRoot Linux 启动完毕，打开刚才指定的串口即可使用。
+6. NonRoot Linux 启动完毕，打开刚才指定的串口即可使用。
