@@ -1,5 +1,5 @@
 <div align=center>
-	<img src="img/hvisor-logo.svg"/>
+	<img src="chap01/img/hvisor-logo.svg"/>
 </div>
 
 # 欢迎使用 hvisor!
