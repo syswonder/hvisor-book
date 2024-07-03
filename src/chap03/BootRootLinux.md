@@ -1,4 +1,4 @@
-# 如何启动Root Linux
+# 如何启动 Root Linux
 
 ## QEMU
 
