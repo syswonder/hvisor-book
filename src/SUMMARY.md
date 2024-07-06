@@ -44,9 +44,7 @@
 # hvisor架构与实现
 
 - [hvisor 架构](./chap04/Structure.md)
-
 - [hvisor 启动与运行](./chap04/BootAndRun.md)
-
 - [CPU 虚拟化](./chap04/subchap01/CPUVirtualization.md)
 
     - [PerCPU 定义](./chap04/subchap01/PerCPU.md)
@@ -56,9 +54,7 @@
     - [RISC-V 处理器虚拟化](./chap04/subchap01/RISCVirtualization.md)
     
     - [LoongArch处理器虚拟化](./chap04/subchap01/LoongArchVirtualization.md)
-
 - [内存虚拟化](./chap04/MemVirtualization.md)
-
 - [中断虚拟化](./chap04/subchap02/InterruptVirtualization.md)
 
     - [ARM 中断控制 GIC](./chap04/subchap02/ARM-GIC.md)
@@ -68,7 +64,6 @@
     - [RISC-V 中断控制 AIA](./chap04/subchap02/RISC-AIA.md)
 
     - [LoongArch 中断控制](./chap04/subchap02/LoonArch-Controller.md)
-
 - [I/O 虚拟化](./chap04/subchap03/IO-Virtualization.md)
 
     - [IOMMU](./chap04/subchap03/IOMMU/IOMMU-Define.md)
@@ -76,21 +71,15 @@
         - [ARM SMMU 的实现](./chap04/subchap03/IOMMU/ARM-SMMU.md)
 
         - [RISC-V IOMMU 标准的实现](./chap04/subchap03/IOMMU/RISC-IOMMU.md)
-
-    - [VirtIO](./chap04/subchap03/VirtIO/VirtIO-Define.md)
-
-        - [Block](./chap04/subchap03/VirtIO/BlockDevice.md)
-
-        - [Console](./chap04/subchap03/VirtIO/ConsoleDevice.md)
-
-        - [Net](./chap04/subchap03/VirtIO/NetDevice.md)
-
-        - [GPU]()
-        
-    - [PCI 虚拟化](./chap04/subchap03/PCI-Virtualization.md)
-
-- [Hvisor 管理工具](./chap04/subchap04/ManageTools.md)
+- [VirtIO](./chap04/subchap03/VirtIO/VirtIO-Define.md)
     
+    - [Block](./chap04/subchap03/VirtIO/BlockDevice.md)
+    - [Net](./chap04/subchap03/VirtIO/NetDevice.md)
+    - [Console](./chap04/subchap03/VirtIO/ConsoleDevice.md)
+    - [GPU]()
+- [PCI 虚拟化](./chap04/subchap03/PCI-Virtualization.md)
+- [Hvisor 管理工具](./chap04/subchap04/ManageTools.md)
+  
     - [Hypercall](./chap04/subchap04/HyperCall.md)
 
 # hvisor 的规划
