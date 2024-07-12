@@ -59,6 +59,7 @@ pub fn sbi_time_handler(fid: usize, current_cpu: &mut ArchCpu) -> SbiRet {
         }
 ```
 将虚拟机的时钟中断挂起位置为1，即向虚拟机注入时钟中断，将hvisor的时钟中断使能位清零，完成中断处理
+
 # 软件中断
 虚拟机需要发送 IPI 时，通过 ecall 指令陷入到 hvisor 中
 ```rs
@@ -92,18 +93,22 @@ pub fn handle_ssi(current_cpu: &mut ArchCpu) {
 ## PLIC
 RISC-V 通过 PLIC 实现对外部中断处理，PLIC 不支持虚拟化，不支持 MSI
 
-![alt text](../img/riscv_plic_struct.png)
+<img src="../img/riscv_plic_struct.png"  style="zoom: 50%;" />
+
 PLIC 架构框图
 
 PLIC的中断流程示意图如下
 
-![alt text](../img/riscv_plic_flu.png)
+<img src="../img/riscv_plic_flow.png"  style="zoom:70%;" />
+
 
 中断源通过中断线向 PLIC 发送一个中断信号，只有当中断的优先级大于阈值的时候，才可以通过阈值寄存器的筛选。
 
 之后读取 claim 寄存器得到 pending 的优先级最高的中断，之后清除对应的 pending 位。传给目标hart进行中断处理
 
 处理完成后向 complete 寄存器写入中断号，可以接收下一个中断请求
+## 初始化
+初始化的过程与AIA类似
 ## 处理过程
 虚拟机中的外部中断触发时，将访问 vPLIC 的地址空间，然而 PLIC 并不支持虚拟化，这个地址空间是未被映射的。因此会触发缺页异常，陷入到 hvisor 中来处理
 
