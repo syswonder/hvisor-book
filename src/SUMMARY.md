@@ -63,7 +63,7 @@
 
     - [RISC-V 中断控制 AIA](./chap04/subchap02/RISC-AIA.md)
 
-    - [LoongArch 中断控制](./chap04/subchap02/LoonArch-Controller.md)
+    - [LoongArch 中断控制](./chap04/subchap02/LoongArch-Controller.md)
 - [I/O 虚拟化](./chap04/subchap03/IO-Virtualization.md)
 
     - [IOMMU](./chap04/subchap03/IOMMU/IOMMU-Define.md)
