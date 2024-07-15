@@ -53,7 +53,7 @@
 
     - [RISC-V 处理器虚拟化](./chap04/subchap01/RISCVirtualization.md)
     
-    - [LoongArch处理器虚拟化](./chap04/subchap01/LoongArchVirtualization.md)
+    - [LoongArch 处理器虚拟化](./chap04/subchap01/LoongArchVirtualization.md)
 - [内存虚拟化](./chap04/MemVirtualization.md)
 - [中断虚拟化](./chap04/subchap02/InterruptVirtualization.md)
 
