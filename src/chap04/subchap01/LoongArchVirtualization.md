@@ -34,7 +34,7 @@ LoongArch指令集是中国龙芯中科公司于2020年发布的自主RISC指令
 
 ### CSR寄存器
 
-控制状态寄存器（Control and Status Register）是LoongArch架构中一种特殊的寄存器，用于控制处理器的运行状态。
+**控制状态寄存器（Control and Status Register, CSR）** 是LoongArch架构中一类特殊的寄存器，用于控制处理器的运行状态。
 控制状态寄存器一览表（不包括LVZ虚拟化拓展中新的CSR）：
 
 | 编号              | 名称                                  | 编号              | 名称                                  | 编号             | 名称                                  |
@@ -76,69 +76,74 @@ LoongArch指令集是中国龙芯中科公司于2020年发布的自主RISC指令
 
 ## CPU模式
 
-实现了LVZ虚拟化拓展的CPU（即龙芯3系处理器）支持两个运行模式——**Host模式和Guest模式**[3]，其中每个模式各自有四个特权级（PLV0-PLV3）。处理器核当前处于哪个特权等级由`CSR.CRMD`中`PLV`域的值唯一确定[2]。
+实现了LVZ虚拟化拓展的CPU（即龙芯3系处理器）支持两个运行模式—— **Host模式和Guest模式** [3]，其中每个模式各自有四个特权级（PLV0-PLV3）。处理器核当前处于哪个特权等级由`CSR.CRMD`中`PLV`域的值唯一确定[2]。
 对于无虚拟化的场景如在Host模式下启动一个Linux内核，其Linux内核态位于PLV0，用户态通常位于PLV3。
 对于虚拟化场景，Host模式由Hypervisor使用，Guest模式则是Hypervisor所启动的虚拟机的运行模式。Guest模式在诸多方面受到Host模式下Hypervisor的控制，并且Guest模式下可以通过
 Hypercall超级调用指令（hvcl）强制陷入Host模式下的Hypervisor。
 
+下图是在loongarch架构下Hypervisor处理guest模式的异常的一种流程：
+
+![LoongArch-Exception-Guest](../img/loongarch_guest_exception_handle.png)
+
 ### GCSR寄存器组
 
-在实现虚拟化的LoongArch处理器中会额外有一组GCSR（Guest Control and Status Register）寄存器，供Guest模式下的虚拟机内操作系统内核使用，这里需要和Host模式下的CSR寄存器区分开。
+在实现虚拟化的LoongArch处理器中会额外有一组 **GCSR（Guest Control and Status Register）** 寄存器，供Guest模式下的虚拟机内操作系统使用，这里需要和Host模式下的CSR寄存器区分开。
+通过这一套GCSR寄存器可以让虚拟机有自己的特权资源和对应管理，同时避免和Hypervisor的特权资源冲突并减少虚拟机陷入Hypervisor的次数。需要注意的是虚拟机对GCSR寄存器的操作、对特权指令（`cpucfg`、`cacop`等）的执行等仍然可以被Hypervisor监控和控制，LVZ拓展允许Hypervisor自由选择是否对这些操作进行拦截。
 
 
 ### 进入Guest模式的流程（KVM）[4]
 
 
-1. 【switch_to_guest】：
+1. 【`switch_to_guest`】：
 
 2. 清空`CSR.ECFG.VS`字段（设置为0，即所有异常共用一个入口地址）
-3. 读取hypervisor中保存的guest eentry（客户OS中断向量地址）-> GEENTRY
+3. 读取Hypervisor中保存的guest eentry（客户OS中断向量地址）-> GEENTRY
    1. 然后将GEENTRY写入`CSR.EENTRY`
-4. 读取hypervisor中保存的guest era（客户OS异常返回地址）-> GPC
+4. 读取Hypervisor中保存的guest era（客户OS异常返回地址）-> GPC
    1. 然后将GPC写入`CSR.ERA`
-5. 读取`CSR.PGDL`全局页表地址，存到hypervisor中
-6. 从hypervisor中加载guest pgdl到`CSR.PGDL`
+5. 读取`CSR.PGDL`全局页表地址，存到Hypervisor中
+6. 从Hypervisor中加载guest pgdl到`CSR.PGDL`
 7. 读出`CSR.GSTAT.GID`和`CSR.GTLBC.TGID`，写入`CSR.GTLBC`
-8. 将`CSR.PRMD.PIE`置1，打开hypervisor级的全局中断
+8. 将`CSR.PRMD.PIE`置1，打开Hypervisor级的全局中断
 9. 将`CSR.GSTAT.PGM`置1，其目的是使ertn指令进入guest mode
-10. hypervisor将自己保存的该guest的通用寄存器（GPRS）恢复到硬件寄存器上（恢复现场）
-11. **执行ertn指令，进入guest模式**
+10. Hypervisor将自己保存的该guest的通用寄存器（GPRS）恢复到硬件寄存器上（恢复现场）
+11. **执行`ertn`指令，进入guest模式**
 
 
 ## 虚拟化相关的异常[2][3]
 
-| 异常号 | subcode | 缩写 | 介绍                       |
-| ------ | ------- | ---- | -------------------------- |
-| 22     | -       | GSPR | 客户机特权级别异常         |
-| 23     | -       | HVC  | hvcl超级调用指令触发的异常 |
-| 24     | 0       | GCM  | 客户机GCSR软件修改异常     |
-| 24     | 1       | GCHC | 客户机GCSR硬件修改异常     |
+| code | subcode | 缩写 | 介绍                                                                                                                                               |
+| ------ | ------- | ---- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 22     | -       | GSPR | 客户机敏感特权资源异常，由`cpucfg`、`idle`、`cacop`指令触发，以及在虚拟机访问了不存在的GCSR和IOCSR时触发，强制陷入Hypervisor进行处理（如软件模拟） |
+| 23     | -       | HVC  | hvcl超级调用指令触发的异常                                                                                                                         |
+| 24     | 0       | GCM  | 客户机GCSR软件修改异常                                                                                                                             |
+| 24     | 1       | GCHC | 客户机GCSR硬件修改异常                                                                                                                             |
 
 
 ### 处理Guest模式下异常的流程（KVM）[4]
 
 
 
-1. 【kvm_exc_entry】：
+1. 【`kvm_exc_entry`】：
 
-2. hypervisor首先保存好guest的通用寄存器（GPRS），保护现场。
-3. hypervisor保存`CSR.ESTAT` -> host ESTAT
-4. hypervisor保存`CSR.ERA` -> GPC
-5. hypervisor保存`CSR.BADV` -> host BADV，即触发地址错误例外时，记录出错的Virtual Address
-6. hypervisor保存`CSR.BADI` -> host BADI，该寄存器用于记录触发同步类例外的指令的指令码，所谓同步类例外是指除了中断（INT）、客户机CSR硬件修改例外（GCHC）、机器错误例外（MERR）之外的所有例外。
-7. 读取hypervisor保存好的host ECFG，写入`CSR.ECFG`（即切换到host下的异常配置）
-8. 读取hypervisor保存好的host EENTRY，写入`CSR.EENTRY`
-9. 读取hypervisor保存好的host PGD，写入`CSR.PGDL`（恢复host页表全局目录基址，低半空间）
-10. 设置CSR.GSTAT.PGM/PGM关闭
+2. Hypervisor首先保存好guest的通用寄存器（GPRS），保护现场。
+3. Hypervisor保存`CSR.ESTAT` -> host ESTAT
+4. Hypervisor保存`CSR.ERA` -> GPC
+5. Hypervisor保存`CSR.BADV` -> host BADV，即触发地址错误例外时，记录出错的虚拟地址
+6. Hypervisor保存`CSR.BADI` -> host BADI，该寄存器用于记录触发同步类例外的指令的指令码，所谓同步类例外是指除了中断（INT）、客户机CSR硬件修改例外（GCHC）、机器错误例外（MERR）之外的所有例外。
+7. 读取Hypervisor保存好的host ECFG，写入`CSR.ECFG`（即切换到host下的异常配置）
+8. 读取Hypervisor保存好的host EENTRY，写入`CSR.EENTRY`
+9. 读取Hypervisor保存好的host PGD，写入`CSR.PGDL`（恢复host页表全局目录基址，低半空间）
+10. 设置`CSR.GSTAT.PGM`关闭
 11. 清空`GTLBC.TGID`域
 12. 恢复kvm per cpu寄存器
     1. kvm汇编里涉及到KVM_ARCH_HTP, KVM_ARCH_HSP, KVM_ARCH_HPERCPU
 13. **跳转到KVM_ARCH_HANDLE_EXIT位置处理异常**
 14. 判断刚才的函数ret是否<=0
     1. 若<=0，则继续运行host
-    2. 否则继续运行guest，保存percpu寄存器，因为可能会切换到不同的CPU继续运行guest。保存host percpu寄存器到CSR.KSave寄存器
+    2. 否则继续运行guest，保存percpu寄存器，因为可能会切换到不同的CPU继续运行guest。保存host percpu寄存器到`CSR.KSAVE`寄存器
 
-15. 跳转到switch_to_guest
+15. 跳转到`switch_to_guest`
 
 ## vCPU上下文需要保存的寄存器
 
