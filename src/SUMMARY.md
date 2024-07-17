@@ -33,9 +33,7 @@
 
 - [启动两个VM：Linux 和 RTOS](./chap03/BootNonRootRTOS.md)
 
-- [ZONE的配置与管理](./chap03/subchap01/ZoneConfig.md)
-
-    - [设备直通](./chap03/subchap01/PassThrough.md)
+- [ZONE的配置与管理](./chap03/ZoneConfig.md)
 
 - [命令行工具](./chap03/CMDTools.md)
 
