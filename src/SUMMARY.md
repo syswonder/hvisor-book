@@ -51,7 +51,7 @@
 
     - [RISC-V 处理器虚拟化](./chap04/subchap01/RISCVirtualization.md)
     
-    - [LoongArch处理器虚拟化](./chap04/subchap01/LoongArchVirtualization.md)
+    - [LoongArch 处理器虚拟化](./chap04/subchap01/LoongArchVirtualization.md)
 - [内存虚拟化](./chap04/MemVirtualization.md)
 - [中断虚拟化](./chap04/subchap02/InterruptVirtualization.md)
 
@@ -61,7 +61,7 @@
 
     - [RISC-V 中断控制 AIA](./chap04/subchap02/RISC-AIA.md)
 
-    - [LoongArch 中断控制](./chap04/subchap02/LoonArch-Controller.md)
+    - [LoongArch 中断控制](./chap04/subchap02/LoongArch-Controller.md)
 - [I/O 虚拟化](./chap04/subchap03/IO-Virtualization.md)
 
     - [IOMMU](./chap04/subchap03/IOMMU/IOMMU-Define.md)
