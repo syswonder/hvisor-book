@@ -114,7 +114,9 @@ sudo mount -o bind /dev/pts rootfs/dev/pts
 sudo chroot rootfs 
 sudo apt-get install git sudo vim bash-completion \
 		kmod net-tools iputils-ping resolvconf ntpdate
-		
+
+# 以下由#圈住的内容可做可不做
+###################
 adduser arm64
 adduser arm64 sudo
 echo "kernel-5_4" >/etc/hostname
@@ -122,6 +124,7 @@ echo "127.0.0.1 localhost" >/etc/hosts
 echo "127.0.0.1 kernel-5_4">>/etc/hosts
 dpkg-reconfigure resolvconf
 dpkg-reconfigure tzdata
+###################
 exit
 
 sudo umount rootfs/proc
@@ -160,4 +163,10 @@ make ARCH=aarch64 LOG=info FEATURES=platform_qemu run
 bootm 0x40400000 - 0x40000000
 ```
 
-该启动命令会从物理地址`0x40400000`启动hvisor，设备树的地址为`0x40000000`。hvisor启动时，会自动启动root linux（用于管理的Linux），并进入root linux的shell界面。
+该启动命令会从物理地址`0x40400000`启动hvisor，设备树的地址为`0x40000000`。hvisor启动时，会自动启动root linux（用于管理的Linux），并进入root linux的shell界面，root linux即为zone0，承担管理工作。
+
+## 七、使用hvisor-tool启动zone1-linux
+
+请参考[hvisor-tool](https://github.com/syswonder/hvisor-tool)的README，完成hvisor-tool的编译。
+
+编译完成后，将driver/hvisor.ko、tools/hvisor两个文件复制到第六步中的rootfs1.ext4根文件系统，同时将zone1的内核镜像、设备树放在rootfs1.ext4中，并重命名为Image、linux2.dtb。之后在QEMU上即可通过root linux-zone0启动zone1-linux，详细步骤参看hvisor-tool的README。
