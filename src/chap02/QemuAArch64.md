@@ -67,14 +67,14 @@ qemu-system-aarch64 --version   #查看版本
 git clone https://github.com/torvalds/linux -b v5.4 --depth=1
 cd linux
 git checkout v5.4
-# 下面的CROSS_COMPILE路径根据第一步安装交叉编译器的路径适当修改
+# CROSS_COMPILE路径根据第一步安装交叉编译器的路径适当修改
 make ARCH=arm64 CROSS_COMPILE=/root/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu- defconfig
 # 在.config中增加一行
 CONFIG_BLK_DEV_RAM=y
 # 修改.config的两个CONFIG参数
 CONFIG_IPV6=y
 CONFIG_BRIDGE=y
-# 编译
+# 编译，CROSS_COMPILE路径根据第一步安装交叉编译器的路径适当修改
 make ARCH=arm64 CROSS_COMPILE=/root/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu- Image -j$(nproc)
 ```
 
@@ -155,7 +155,7 @@ sudo umount rootfs
 
 ## 六、编译和运行hvisor
 
-首先将[hvisor代码仓库](https://github.com/KouweiLee/hvisor)拉到本地，并在hvisor/images/aarch64文件夹下，将之前编译好的根文件系统、Linux内核镜像分别放在virtdisk、kernel目录下，并分别重命名为rootfs1.ext4、Image。并在devicetree目录下，执行`make all`。
+首先将[hvisor代码仓库](https://github.com/KouweiLee/hvisor)拉到本地，之后切换到dev分支，并在hvisor/images/aarch64文件夹下，将之前编译好的根文件系统、Linux内核镜像分别放在virtdisk、kernel目录下，并分别重命名为rootfs1.ext4、Image。并在devicetree目录下，执行`make all`。
 
 之后，在hvisor目录下，执行：
 
