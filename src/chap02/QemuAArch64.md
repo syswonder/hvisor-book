@@ -54,6 +54,11 @@ qemu-system-aarch64 --version   #查看版本
 > - 出现 `ERROR: glib-2.48 gthread-2.0 is required to compile QEMU` 时，可以安装 `libglib2.0-dev` 包；
 > - 出现 `ERROR: pixman >= 0.21.8 not present` 时，可以安装 `libpixman-1-dev` 包。
 
+> 若生成设置文件时遇到报错ERROR: Dependency "slirp" not found, tried pkgconfig：
+>
+> 下载 [https://gitlab.freedesktop.org/slirp/libslirp](https://gitlab.freedesktop.org/slirp/libslirp)包，并按readme安装即可。
+
+
 ## 三、编译Linux Kernel 5.4
 
 在编译root linux的镜像前, 在.config文件中把CONFIG_IPV6和CONFIG_BRIDGE的config都改成y, 以支持在root linux中创建网桥和tap设备。具体操作如下：
@@ -62,13 +67,14 @@ qemu-system-aarch64 --version   #查看版本
 git clone https://github.com/torvalds/linux -b v5.4 --depth=1
 cd linux
 git checkout v5.4
+# CROSS_COMPILE路径根据第一步安装交叉编译器的路径适当修改
 make ARCH=arm64 CROSS_COMPILE=/root/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu- defconfig
 # 在.config中增加一行
 CONFIG_BLK_DEV_RAM=y
 # 修改.config的两个CONFIG参数
 CONFIG_IPV6=y
 CONFIG_BRIDGE=y
-# 编译
+# 编译，CROSS_COMPILE路径根据第一步安装交叉编译器的路径适当修改
 make ARCH=arm64 CROSS_COMPILE=/root/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu- Image -j$(nproc)
 ```
 
@@ -149,7 +155,7 @@ sudo umount rootfs
 
 ## 六、编译和运行hvisor
 
-首先将[hvisor代码仓库](https://github.com/KouweiLee/hvisor)拉到本地，并在hvisor/images/aarch64文件夹下，将之前编译好的根文件系统、Linux内核镜像分别放在virtdisk、kernel目录下，并分别重命名为rootfs1.ext4、Image。并在devicetree目录下，执行`make all`。
+首先将[hvisor代码仓库](https://github.com/KouweiLee/hvisor)拉到本地，之后切换到dev分支，并在hvisor/images/aarch64文件夹下，将之前编译好的根文件系统、Linux内核镜像分别放在virtdisk、kernel目录下，并分别重命名为rootfs1.ext4、Image。并在devicetree目录下，执行`make all`。
 
 之后，在hvisor目录下，执行：
 
@@ -164,6 +170,12 @@ bootm 0x40400000 - 0x40000000
 ```
 
 该启动命令会从物理地址`0x40400000`启动hvisor，设备树的地址为`0x40000000`。hvisor启动时，会自动启动root linux（用于管理的Linux），并进入root linux的shell界面，root linux即为zone0，承担管理工作。
+
+> 提示缺少`dtc`时，，可以执行指令：
+>
+> ```
+> sudo apt install device-tree-compiler
+> ```
 
 ## 七、使用hvisor-tool启动zone1-linux
 
