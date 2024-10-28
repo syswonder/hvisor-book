@@ -180,7 +180,7 @@ bootm 0x40400000 - 0x40000000
 
 ## 七、使用 hvisor-tool 启动 zone1-linux
 
-首先完成最新版本的 hvisor-tool 的编译。具体请参考[hvisor-tool](https://github.com/syswonder/hvisor-tool)的 README（中文版本是最新版本，英文 README 可能更新不及时）。例如，若要编译面向 arm64 的命令行工具，且 Hvisor 环境中的 Linux 镜像编译来源的源码位于 `KDIR=~/linux`，则可执行
+首先完成最新版本的 hvisor-tool 的编译。具体请参考[hvisor-tool](https://github.com/syswonder/hvisor-tool)的 README（中文版本是最新版本，英文 README 可能更新不及时）。例如，若要编译面向 arm64 的命令行工具，且 Hvisor 环境中的 Linux 镜像编译来源的源码位于 `~/linux`，则可执行
 
 ```
 make all ARCH=arm64 LOG=LOG_WARN KDIR=~/linux
