@@ -20,6 +20,8 @@
 
 - [FPGA-Rockechip 快速上手](./chap02/FPGA-Rockechip.md)
 
+- [龙芯3A5000 hvisor 快速上手](./chap02/Loongson-3A5000.md)
+
 - [FPGA 香山昆明湖快速上手]()
 
 
