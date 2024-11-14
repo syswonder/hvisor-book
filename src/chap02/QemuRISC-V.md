@@ -83,7 +83,6 @@ sudo umount rootfs
 
 默认情况下使用 PLIC，执行`make run ARCH=riscv64 IRQ=aia`开启AIA规范
 
-<<<<<<< HEAD
 # 启动non-root linux
 使用 hvisor-tool 生成hvisor.ko文件，之后在 QEMU 上即可通过 root linux-zone0 启动 zone1-linux。
 
@@ -95,7 +94,3 @@ mkdir -p /dev/pts
 mount -t devpts devpts /dev/pts
 nohup ./hvisor zone start linux2-aia.json && cat nohup.out | grep "char device" && script /dev/null
 ```
-=======
-# 可能出现的问题
-linux运行后显示`/bin/sh: 0: can't access tty; job control turned off`，在控制台输入`bash`
->>>>>>> 8a7b9a327f0649fb42ca8fa9c5f5d6e0a5827e8d
