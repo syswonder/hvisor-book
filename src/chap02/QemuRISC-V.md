@@ -1,15 +1,15 @@
 # 安装qemu
-安装QEMU 7.2.12：
+安装QEMU 9.0.2：
 ```
-wget https://download.qemu.org/qemu-7.2.12.tar.xz
+wget https://download.qemu.org/qemu-9.0.2.tar.xz
 # 解压
-tar xvJf qemu-7.2.12.tar.xz
-cd qemu-7.2.12
+tar xvJf qemu-9.0.2.tar.xz
+cd qemu-9.0.2
 # 配置Riscv支持
 ./configure --target-list=riscv64-softmmu,riscv64-linux-user 
 make -j$(nproc)
 #加入环境变量
-export PATH=$PATH:/path/to/qemu-7.2.12/build
+export PATH=$PATH:/path/to/qemu-9.0.2/build
 #测试是否安装成功
 qemu-system-riscv64 --version
 ```
@@ -83,5 +83,14 @@ sudo umount rootfs
 
 默认情况下使用 PLIC，执行`make run ARCH=riscv64 IRQ=aia`开启AIA规范
 
-# 可能出现的问题
-linux运行后显示`/bin/sh: 0: can't access tty; job control turned off`，在控制台输入`bash`
+# 启动non-root linux
+使用 hvisor-tool 生成hvisor.ko文件，之后在 QEMU 上即可通过 root linux-zone0 启动 zone1-linux。
+
+启动root linux后，/home目录下执行
+```bash
+sudo insmod hvisor.ko
+rm nohup.out
+mkdir -p /dev/pts
+mount -t devpts devpts /dev/pts
+nohup ./hvisor zone start linux2-aia.json && cat nohup.out | grep "char device" && script /dev/null
+```

@@ -41,3 +41,90 @@ hvisor tool会将自己注册为一个PCI虚拟驱动程序，并在其他zone�
 目前，I/O空间和内存空间的处理方案与配置空间相同。因为bars资源的唯一性，配置空间不可能被直接分配给zone，且对bar空间的访问频率很低，并不会过多的影响效率。但是I/O空间和内存空间的直接分配是理论上可行，进一步会将I/O空间和内存空间直接分配给对应的zone以提高访问速度。
 
 为了方便在QEMU中测试PCI虚拟化，我们编写了一个PCI设备。
+
+# PCIe资源分配与隔离
+
+## 资源分配方式
+
+在每个zone的配置文件中，通过 `num_pci_devs`指定分配给该zone的PCIe设备的数量，通过 `alloc_pci_devs`指定这些设备的BDF。注意，必须包括0。
+
+例如：
+
+```json
+{
+    "arch": "riscv",
+    "name": "linux2",
+    "zone_id": 1,
+    ///
+    "num_pci_devs": 2,
+    "alloc_pci_devs": [0, 16]
+}
+```
+
+## virt PCI
+
+```rust
+pub struct PciRoot {
+    endpoints: Vec<EndpointConfig>,
+    bridges: Vec<BridgeConfig>,
+    alloc_devs: Vec<usize>, // include host bridge
+    phantom_devs: Vec<PhantomCfg>,
+    bar_regions: Vec<BarRegion>,
+}
+```
+
+需要说明的是，`phantom_devs`是不属于这个虚拟机的设备；`bar_regions`是属于该虚拟机的设备的BAR空间。
+
+### phantom_dev
+
+这部分代码在`src/pci/phantom_cfg.rs`中可以找到，当虚拟机第一次访问到不属于自己的设备时，创建`phantom_dev`。
+
+处理函数在`src/pci/pci.rs`中的`mmio_pci_handler`可以找到，这是我们处理虚拟机对配置空间的访问的函数。
+
+#### header
+
+**hvisor让每个虚拟机看到同样的PCIe拓扑，这样能够避免BAR和bus号分配不同带来的复杂处理，尤其是对于桥设备中的涉及TLB转发的配置，能够节省很多功夫。**
+
+但对于不是分配给该虚拟机的Endpoint，将其虚拟为`phantom_dev`，访问header时应该返回特定的`vendor-id`和`device-id`，例如0x77777777，以及返回reserved `class-code`，对于这类存在但无法找到对应驱动的设备，虚拟机只会在枚举阶段进行一些基础的配置，如BAR的预留。
+
+#### capabilities
+
+capabilities部分涉及到MSI的配置等，当虚拟机访问`capabilities-pointer`时返回0，代表该设备无capabilities，防止对设备所属虚拟机的配置(例如BAR空间中的MSI-TABLE的配置内容)进行覆盖。
+
+#### command
+
+另外对于`COMMAND`寄存器，虚拟机检测到没有`MSI capabilities`，则会将传统中断打开，这涉及到`COMMAND`寄存器中的`DisINTx`字段的设置，硬件要求MSI和legacy只能选择其一，避免虚拟机之间设置的矛盾(本来非所属虚拟机也不应该设置)，故我们需要一个虚拟的`COMMAND`寄存器。
+
+### 关于BAR
+
+这部分代码在`src/pci/pcibar.rs`中可以找到。
+
+```rust
+pub struct PciBar {
+    val: u32,
+    bar_type: BarType,
+    size: usize,
+}
+
+pub struct BarRegion{
+    pub start: usize,
+    pub size: usize,
+    pub bar_type: BarType
+}
+
+pub enum BarType {
+    Mem32,
+    Mem64,
+    IO,
+    #[default]
+    Unknown,
+}
+```
+
+每个虚拟机看到同样的拓扑，则BAR空间的分配完全相同。
+
+那么在非root虚拟机启动时，直接读取root配置好的BAR，就能得知每个虚拟机应该访问的BAR空间是哪些(由分配给它的设备决定)。
+
+如果当虚拟机访问BAR的时候再陷入hypervisor进行代理，效率就低了，我们应该让硬件做这个事情，直接将这段空间写入虚拟机的stage-2页表中，注意`pci_bars_register`函数中，填入页表时，要根据`BarRegion`的`BarType`，找到该类型的PCI地址与CPU地址的映射关系(写在了设备树中，同时同步于配置文件的`pci_config`)，将BAR配置中的PCI地址转为对应的CPU地址再写入页表。
+
+**上述从root配置好的BAR中获取BAR分配结果的方法主要是，区分Endpoint和Bridge(这是因为二者的BAR数量不同)，根据BDF访问配置空间，首先读取root的配置结果，再写入全1获得大小，再写回配置结果。具体代码可结合`endpoint.rs`，`bridge.rs`以及`pcibar.rs`查看，其中涉及到64位内存地址的需要特别注意。**
