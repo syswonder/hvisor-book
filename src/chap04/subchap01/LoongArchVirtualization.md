@@ -2,7 +2,7 @@
 
 LoongArch指令集是中国龙芯中科公司于2020年发布的自主RISC指令集，包括基础指令集、二进制翻译拓展（LBT）、向量拓展（LSX）、高级向量扩展（LASX）和虚拟化拓展（LVZ）五个模块。
 
-本文将主要对LoongArch指令集的CPU虚拟化设计进行简要介绍。
+本文将主要对LoongArch指令集的CPU虚拟化设计进行简要介绍，其相关说明来自目前已经公开的KVM源代码以及代码注释。
 
 ## LoongArch寄存器简介
 
@@ -78,7 +78,7 @@ LoongArch指令集是中国龙芯中科公司于2020年发布的自主RISC指令
 
 在实现虚拟化的LoongArch处理器中会额外有一组 **GCSR（Guest Control and Status Register）** 寄存器。
 
-### 进入Guest模式的流程（来自Linux KVM源码）[4]
+### 进入Guest模式的流程（来自Linux KVM源码）[3]
 
 
 1. 【`switch_to_guest`】：
@@ -107,7 +107,7 @@ LoongArch指令集是中国龙芯中科公司于2020年发布的自主RISC指令
 | 24     | 1       | GCHC | 客户机GCSR硬件修改异常                                                                                                                             |
 
 
-### 处理Guest模式下异常的流程（来自Linux KVM源码）[4]
+### 处理Guest模式下异常的流程（来自Linux KVM源码）[3]
 
 1. 【`kvm_exc_entry`】：
 
