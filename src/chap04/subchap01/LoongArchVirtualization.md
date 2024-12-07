@@ -74,24 +74,11 @@ LoongArch指令集是中国龙芯中科公司于2020年发布的自主RISC指令
 | 0x52 | 客户机中断控制 `GINTC`   |
 | 0x53 | 客户机计数器补偿 `GCNTC` |
 
-## CPU模式
-
-实现了LVZ虚拟化拓展的CPU（即龙芯3系处理器）支持两个运行模式—— **Host模式和Guest模式** [3]，其中每个模式各自有四个特权级（PLV0-PLV3）。处理器核当前处于哪个特权等级由`CSR.CRMD`中`PLV`域的值唯一确定[2]。
-对于无虚拟化的场景如在Host模式下启动一个Linux内核，其Linux内核态位于PLV0，用户态通常位于PLV3。
-对于虚拟化场景，Host模式由Hypervisor使用，Guest模式则是Hypervisor所启动的虚拟机的运行模式。Guest模式在诸多方面受到Host模式下Hypervisor的控制，并且Guest模式下可以通过
-Hypercall超级调用指令（hvcl）强制陷入Host模式下的Hypervisor。
-
-下图是在loongarch架构下Hypervisor处理guest模式的异常的一种流程：
-
-![LoongArch-Exception-Guest](../img/loongarch_guest_exception_handle.png)
-
 ### GCSR寄存器组
 
-在实现虚拟化的LoongArch处理器中会额外有一组 **GCSR（Guest Control and Status Register）** 寄存器，供Guest模式下的虚拟机内操作系统使用，这里需要和Host模式下的CSR寄存器区分开。
-通过这一套GCSR寄存器可以让虚拟机有自己的特权资源和对应管理，同时避免和Hypervisor的特权资源冲突并减少虚拟机陷入Hypervisor的次数。需要注意的是虚拟机对GCSR寄存器的操作、对特权指令（`cpucfg`、`cacop`等）的执行等仍然可以被Hypervisor监控和控制，LVZ拓展允许Hypervisor自由选择是否对这些操作进行拦截。
+在实现虚拟化的LoongArch处理器中会额外有一组 **GCSR（Guest Control and Status Register）** 寄存器。
 
-
-### 进入Guest模式的流程（KVM）[4]
+### 进入Guest模式的流程（来自Linux KVM源码）[4]
 
 
 1. 【`switch_to_guest`】：
@@ -120,9 +107,7 @@ Hypercall超级调用指令（hvcl）强制陷入Host模式下的Hypervisor。
 | 24     | 1       | GCHC | 客户机GCSR硬件修改异常                                                                                                                             |
 
 
-### 处理Guest模式下异常的流程（KVM）[4]
-
-
+### 处理Guest模式下异常的流程（来自Linux KVM源码）[4]
 
 1. 【`kvm_exc_entry`】：
 
@@ -155,7 +140,4 @@ Hypercall超级调用指令（hvcl）强制陷入Host模式下的Hypervisor。
 
 [2] 龙芯中科技术股份有限公司.龙芯架构参考手册.卷一：基础架构.
 
-[3] 龙芯中科技术股份有限公司.龙芯架构参考手册.卷三.
-
-<!-- [4] https://github.com/torvalds/linux/blob/master/arch/loongarch/kvm/switch.S -->
-[4] [https://github.com/torvalds/linux/blob/master/arch/loongarch/kvm/switch.S](https://github.com/torvalds/linux/blob/master/arch/loongarch/kvm/switch.S).
+[3] [https://github.com/torvalds/linux/blob/master/arch/loongarch/kvm/switch.S](https://github.com/torvalds/linux/blob/master/arch/loongarch/kvm/switch.S).
