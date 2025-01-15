@@ -22,6 +22,14 @@
 
 - [龙芯3A5000 hvisor 快速上手](./chap02/Loongson-3A5000.md)
 
+- [Xilinx ZCU102 hvisor 快速上手](./chap02/subchap01/Xilinx-ZCU102.md)
+
+	- [Qemu ZCU102 hvisor 启动](./chap02/subchap01/Qemu-ZCU102.md)
+	
+	- [Board ZCU102 hvisor 多模式启动](./chap02/subchap01/Board-ZCU102.md)
+	
+	- [ZCU102 Nonroot 启动](./chap02/subchap01/Nonroot-ZCU102.md)
+	
 - [FPGA 香山昆明湖快速上手]()
 
 
