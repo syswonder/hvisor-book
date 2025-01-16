@@ -30,6 +30,8 @@
 	
 	- [ZCU102 Nonroot 启动](./chap02/subchap01/Nonroot-ZCU102.md)
 	
+    - [UBOOT FIT镜像制作、加载与启动](./chap02/subchap01/UbootFitImage-ZCU102.md)
+
 - [FPGA 香山昆明湖快速上手]()
 
 
