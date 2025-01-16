@@ -22,18 +22,20 @@ fatload mmc 0:1 0x04000000 zcu102-root-aarch64.dtb;fatload mmc 0:1 0x00200000 Im
 然后在命令行打开一个 petalinux 工程，确保工程已经编译过并生成了对应的启动文件（vmlinux、BOOT.BIN等），之后进入工程根目录运行 [1]：
 
 ```bash
-petalinux-boot --jtag --prebuilt 3
+petalinux-boot --jtag --prebuilt 2
 ```
 
-其中prebuilt代表启动的层次：
+其中 prebuilt 代表启动的层次：
 
-- **Level 1**: 只下载FPGA bitstream，启动 FSBL 和 PMUFW
-- **Level 2**: 下载FPGA bitstream 并启动 UBOOT，并启动 FSBL、PMUFW 和 TF-A（Trusted Firmware-A [2]）
-- **Level 3**: 下载并启动 linux，并加载或启动FPGA bitstream、FSBL、PMUFW、TF-A、UBOOT
+- **Level 1**: 只下载 FPGA bitstream，启动 FSBL 和 PMUFW
+- **Level 2**: 下载 FPGA bitstream 并启动 UBOOT，并启动 FSBL、PMUFW 和 TF-A（Trusted Firmware-A [2]）
+- **Level 3**: 下载并启动 linux，并加载或启动 FPGA bitstream、FSBL、PMUFW、TF-A、UBOOT
 
 之后 JTAG 会通过 JTAG 线把对应的文件下载到板子上（保存到指的内存地址），并启动对应的 bootloader，具体官方的 UBOOT 默认脚本参见工程镜像目录的 boot.scr 文件。
 
-请通过另一个 UART 线观察 ZCU102 板子的输出（包括FSBL、UBOOT、Linux等输出），可以通过 screen/gtkterm/termius/minicom 等串口工具查看。
+由于 hvisor 需要单独的 UBOOT 命令和自制的 fitImage 启动，请参考 [UBOOT FIT 镜像制作、加载与启动](../../chap02/subchap01/UbootFitImage-ZCU102.md)。
+
+另一个 UART 线可用于以观察 ZCU102 板子的输出（包括 FSBL、UBOOT、linux 等输出），可以通过 `screen` / `gtkterm` / `termius` / `minicom` 等串口工具查看。
 
 <div class="warning">
     <h3>请注意</h3>
