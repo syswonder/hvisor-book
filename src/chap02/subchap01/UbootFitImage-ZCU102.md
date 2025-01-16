@@ -1,5 +1,9 @@
 # UBOOT FIT 镜像制作、加载与启动
+
 wheatfox (enkerewpo@hotmail.com)
+
+本文介绍 FIT 镜像相关的基本知识，以及如何制作、加载和启动 FIT 镜像。
+
 ## ITS 源文件
 ITS 是 uboot 生成 FIT 镜像（FIT Image）的源码，即 Image Tree Source，其采用 Device Tree Source（DTS）语法格式，可以通过 uboot 提供的工具 mkimage 生成 FIT 镜像。
 在 hvisor 的 ZCU102 移植中，使用 FIT 镜像打包 hvisor、root linux、root dtb 等文件到一个 fitImage 中，便于在 QEMU 和实际硬件上启动。

@@ -35,6 +35,8 @@ petalinux-boot --jtag --prebuilt 2
 
 由于 hvisor 需要单独的 UBOOT 命令和自制的 fitImage 启动，请参考 [UBOOT FIT 镜像制作、加载与启动](../../chap02/subchap01/UbootFitImage-ZCU102.md)。
 
+制作好 fitImage 后，请替换 petalinux images生成目录内的文件（Image.ub），使得 JTAG 加载我们自己制作的 fitImage 到 petalinux 工程配置好的默认 FIT 镜像加载地址，这样 JTAG 启动时会将我们的 fitImage 通过 JTAG 线加载到板子内存对应的地址中，之后再通过 uboot 命令行 extract 和 bootm。
+
 另一个 UART 线可用于以观察 ZCU102 板子的输出（包括 FSBL、UBOOT、linux 等输出），可以通过 `screen` / `gtkterm` / `termius` / `minicom` 等串口工具查看。
 
 <div class="warning">
