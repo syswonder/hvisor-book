@@ -82,11 +82,11 @@
 
         - [RISC-V IOMMU 标准的实现](./chap04/subchap03/IOMMU/RISC-IOMMU.md)
 - [VirtIO](./chap04/subchap03/VirtIO/VirtIO-Define.md)
-    
+  
     - [Block](./chap04/subchap03/VirtIO/BlockDevice.md)
     - [Net](./chap04/subchap03/VirtIO/NetDevice.md)
     - [Console](./chap04/subchap03/VirtIO/ConsoleDevice.md)
-    - [GPU]()
+    - [GPU](./chap04/subchap03/VirtIO/GPUDevice.md)
 - [PCI 虚拟化](./chap04/subchap03/PCI-Virtualization.md)
 - [Hvisor 管理工具](./chap04/subchap04/ManageTools.md)
   
