@@ -9,5 +9,5 @@
 ```bash
 git clone https://github.com/enkerewpo/hvisor
 cd hvisor
-make ARCH=loongarch64 FEATURES=platform_3a6000yy0121
+make ARCH=loongarch64 FEATURES=platform_3a6000
 ```
