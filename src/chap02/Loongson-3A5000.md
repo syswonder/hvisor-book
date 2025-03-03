@@ -35,7 +35,7 @@ HVISOR_TOOL_DIR = ../hvisor-tool
 ```bash
 make menuconfig # 配置为你本地的loongarch64 gcc工具链前缀、hvisor.bin路径、vmlinux.bin路径
 # 1. 修改make_image中的HVISOR_SRC_DIR=../hvisor为你实际保存hvisor源码的路径，之后再运行脚本
-# 2. 修改 FEATURES=platform_3a5000/3a6000yy0121，取决于你的主板型号，其中不带后缀的默认是龙芯自己的官方主板，带后缀的为第三方设计的主板
+# 2. 修改 FEATURES=platform_3a5000/3a6000
 ./make_image
 # 得到 BOOTLOONGARCH64.EFI 文件
 ```
