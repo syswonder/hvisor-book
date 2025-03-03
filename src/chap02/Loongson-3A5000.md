@@ -1,12 +1,12 @@
 # 在龙芯3A5000主板（7A2000）上启动 hvisor
 
-韩喻泷 <enkerewpo@hotmail.com>
+韩喻泷 <wheatfox17@icloud.com>
 
 更新时间：2025.3.3
 
 ## 第一步：获取 hvisor 源码并编译
 
-首先需要安装 `loongarch64-unknown-linux-gnu-` 工具链，请从 <https://github.com/sunhaiyong1978/CLFS-for-LoongArch/releases/download/8.0/loongarch64-clfs-8.0-cross-tools-gcc-full.tar.xz> 下载并解压到本地，然后请讲 `cross-tools/bin` 目录添加到你的 `PATH` 环境变量中，保证 `loongarch64-unknown-linux-gnu-gcc` 等工具可以被 shell 直接调用。
+首先需要安装 `loongarch64-unknown-linux-gnu-` 工具链，请从 <https://github.com/sunhaiyong1978/CLFS-for-LoongArch/releases/download/8.0/loongarch64-clfs-8.0-cross-tools-gcc-full.tar.xz> 下载并解压到本地，然后请将 `cross-tools/bin` 目录添加到你的 `PATH` 环境变量中，保证 `loongarch64-unknown-linux-gnu-gcc` 等工具可以被 shell 直接调用。
 
 然后克隆代码到本地：
 
@@ -16,7 +16,7 @@ make ARCH=loongarch64 FEATURES=platform_3a5000
 ```
 编译完成后在 target 目录下可以找到 strip 之后的 `hvisor.bin`（编译输出的最后一行会显示文件路径）。
 
-## 获取vmlinux.bin镜像
+## 获取 `vmlinux.bin` 等文件
 
 请从<https://github.com/enkerewpo/linux-hvisor-loongarch64/releases>下载最新发布的 hvisor 默认龙芯 linux 镜像（包括 root linux kernel+root linux dtb+root linux rootfs，其中 root linux rootfs 中包括 non root linux+nonroot linux dtb+nonroot linux rootfs）。如果你需要自行编译 linux kernel 以及 rootfs，可参考该仓库的 `arch/loongarch` 目录中 hvisor 相关设备树以及我为 3A5000 移植的 buildroot 环境（<https://github.com/enkerewpo/buildroot-loongarch64>）。如果你需要手动编译 hvisor-tool，请参考<https://github.com/enkerewpo/hvisor-tool>，关于所有环境的编译顺序和脚本调用流程请参考 `Makefile.1` 文件中 `world` 目标内的代码（<https://github.com/enkerewpo/hvisor_uefi_packer/blob/main/Makefile.1>），并通过运行 `./make_world` 脚本编译所有东西，如果你需要手动编译这些，则需要在 `Makefile.1` 内修改对应的代码路径变量，包括：
 
@@ -47,7 +47,7 @@ make menuconfig # 配置为你本地的loongarch64 gcc工具链前缀、hvisor.b
 
 主板上电开机，按 **F12** 进入UEFI Boot Menu，选择你插入的 U 盘后回车，会自动启动 hvisor，并进入 root linux 的 bash 环境。
 
-## 启动nonroot
+## 启动 nonroot
 
 如果你使用的是 release 中提供的相关镜像，启动后在 root linux 的 bash 内输入：
 
