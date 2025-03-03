@@ -1,6 +1,6 @@
 # 在龙芯3A6000主板（7A2000）上启动 hvisor
 
-韩喻泷 <enkerewpo@hotmail.com>
+韩喻泷 <wheatfox17@icloud.com>
 
 更新时间：2025.3.3
 
