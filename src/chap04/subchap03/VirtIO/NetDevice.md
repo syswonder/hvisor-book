@@ -45,3 +45,66 @@ Virtio网络设备的Transmit Virtqueue用于存放发送缓冲区。当设备�
 ## 接收报文
 
 Virtio网络设备在初始化时，会将Tap设备的文件描述符加到event monitor线程epoll实例的interest list中。event monito线程会循环调用epoll_wait函数，监视tap设备的可读事件，一旦发生可读事件，说明tap设备收到了内核发来的报文，epoll_wait函数返回，执行接收报文处理函数。处理函数会从Receive Virtqueue的可用环中取出一个描述符链，并读取tap设备，将数据写入描述符链指向的内存缓冲区中，并更新已用环。处理函数将重复该步骤，直到读取tap设备返回值为负并且errno为EWOULDBLOCK，表明tap设备已经没有新的报文，之后中断通知其他虚拟机收报文。
+
+## 配置环境
+
+### 磁盘镜像的要求
+
+root Linux的磁盘镜像至少需要安装以下几个包：
+
+```
+apt-get install git sudo vim bash-completion \
+kmod net-tools iputils-ping resolvconf ntpdate
+```
+
+### linux Image的要求
+
+在编译root linux的镜像前, 在.config文件中把CONFIG_IPV6和CONFIG_BRIDGE的config都改成y, 以支持在root linux中创建网桥和tap设备。例如：
+
+```shell
+cd linux
+# 在.config中增加一行
+CONFIG_BLK_DEV_RAM=y
+# 修改.config的两个CONFIG参数
+CONFIG_IPV6=y
+CONFIG_BRIDGE=y
+# 之后编译Linux即可
+```
+
+### 创建网络拓扑
+
+使用Virtio net设备前，需要在root Linux中创建一个网络拓扑图，以便Virtio net设备通过Tap设备和网桥设备连通真实网卡。在root Linux中执行以下指令：
+
+```shell
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+ip link set eth0 up
+dhclient eth0
+brctl addbr br0
+brctl addif br0 eth0
+ifconfig eth0 0
+dhclient br0
+ip tuntap add dev tap0 mode tap
+brctl addif br0 tap0
+ip link set dev tap0 up
+```
+
+便可创建`tap0设备<-->网桥设备<-->真实网卡`的网络拓扑。
+
+### 测试Non root linux网络连通性
+
+在non root linux的命令行执行，以启动网卡：
+
+```shell
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+ip link set eth0 up
+dhclient eth0
+```
+
+可以通过以下指令测试网络的连通：
+
+```
+curl www.baidu.com
+ping www.baidu.com
+```
