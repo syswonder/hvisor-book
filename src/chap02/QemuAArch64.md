@@ -160,8 +160,8 @@ sudo umount rootfs
 
 之后，在 hvisor 目录下，执行：
 
-```
-make ARCH=aarch64 LOG=info FEATURES=platform_qemu run
+```bash
+make ARCH=aarch64 LOG=info BOARD=qemu-gicv3 run # 或者使用 BOARD=qemu-gicv2
 ```
 
 之后会进入 uboot 启动界面，该界面下执行：
