@@ -1,5 +1,7 @@
 # Virtio
 
+注意，本文档主要介绍Virtio如何在hvisor中实现，详细使用教程请参见[hvisor-tool-README](https://github.com/syswonder/hvisor-tool?tab=readme-ov-file#readme)
+
 ## Virtio简介
 
 Virtio由Rusty Russell于2008年提出，是一个旨在提高设备性能, 统一各种半虚拟设备方案的设备虚拟化标准。目前，Virtio已囊括了十几种外设如磁盘、网卡、控制台、GPU等，同时许多操作系统包括Linux均已实现多种Virtio设备的前端驱动程序。因此虚拟机监控器只需实现Virtio后端设备，便可直接允许Linux等已实现Virtio驱动的虚拟机使用Virtio设备。 
