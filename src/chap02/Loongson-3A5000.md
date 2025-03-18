@@ -36,7 +36,7 @@ HVISOR_TOOL_DIR = ../hvisor-tool
 make menuconfig # 配置为你本地的loongarch64 gcc工具链前缀、hvisor.bin路径、vmlinux.bin路径
 # 1. 修改make_image中的HVISOR_SRC_DIR=../hvisor为你实际保存hvisor源码的路径，之后再运行脚本
 # 2. 修改 BOARD=ls3a5000/ls3a6000
-./make_image
+./make_loongarch64
 # 得到 BOOTLOONGARCH64.EFI 文件
 ```
 
