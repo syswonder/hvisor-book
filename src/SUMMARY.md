@@ -24,7 +24,7 @@
 
 - [龙芯3A5000 hvisor 快速上手](./chap02/Loongson-3A5000.md)
 
-- [龙芯3A6000 hvisor 快速上手](./chap02/Loongson-3A6000.md)
+<!-- - [龙芯3A6000 hvisor 快速上手](./chap02/Loongson-3A6000.md) -->
 
 - [Xilinx ZCU102 hvisor 快速上手](./chap02/subchap01/Xilinx-ZCU102.md)
 
