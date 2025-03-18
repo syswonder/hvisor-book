@@ -6,9 +6,11 @@
 
 - [hvisor 概述](./chap01/Overview.md)
 
-- [hvisor 支持的指令集和处理器](./chap01/ISA.md)
+<!-- - [hvisor 支持的指令集和处理器](./chap01/ISA.md) -->
 
 - [hvisor 支持的硬件平台](./chap01/Board.md)
+
+- [hvisor 硬件适配开发手册 🧑🏻‍💻](./chap01/PlatformDev.md)
 
 # hvisor 快速上手指南
 
