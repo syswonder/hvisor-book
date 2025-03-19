@@ -6,7 +6,7 @@
 
 - [hvisor 概述](./chap01/Overview.md)
 
-<!-- - [hvisor 支持的指令集和处理器](./chap01/ISA.md) -->
+- [hvisor 支持的指令集和处理器](./chap01/ISA.md)
 
 - [hvisor 支持的硬件平台](./chap01/Board.md)
 
@@ -23,8 +23,6 @@
 - [FPGA-Rockechip 快速上手](./chap02/FPGA-Rockechip.md)
 
 - [龙芯3A5000 hvisor 快速上手](./chap02/Loongson-3A5000.md)
-
-<!-- - [龙芯3A6000 hvisor 快速上手](./chap02/Loongson-3A6000.md) -->
 
 - [Xilinx ZCU102 hvisor 快速上手](./chap02/subchap01/Xilinx-ZCU102.md)
 
