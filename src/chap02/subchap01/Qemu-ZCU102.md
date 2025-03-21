@@ -13,7 +13,7 @@
 ## 编译 Hvisor
 参照《在 Qemu 上运行 Hvisor》对编译 Hvisor 所需的环境进行配置，之后在 hvisor 目录下，执行：
 ```
-make ARCH=aarch64 LOG=info FEATURES=platform_zcu102,gicv2 cp
+make ARCH=aarch64 LOG=info BOARD=zcu102 cp
 ```
 进行编译工作，目录下```/target/aarch64-unknown-none（可能不同）/debug/hvisor```，即为所需求的 hvisor 镜像。
 ## 准备设备树
