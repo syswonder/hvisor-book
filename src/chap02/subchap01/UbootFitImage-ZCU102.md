@@ -1,6 +1,6 @@
 # UBOOT FIT 镜像制作、加载与启动
 
-wheatfox (enkerewpo@hotmail.com)
+wheatfox (wheatfox17@icloud.com)
 
 本文介绍 FIT 镜像相关的基本知识，以及如何制作、加载和启动 FIT 镜像。
 

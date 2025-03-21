@@ -10,6 +10,8 @@
 
 - [hvisor 支持的硬件平台](./chap01/Board.md)
 
+- [hvisor 硬件适配开发手册 🧑🏻‍💻](./chap01/PlatformDev.md)
+
 # hvisor 快速上手指南
 
 - [Qemu AArch64 快速上手](./chap02/QemuAArch64.md)
