@@ -4,7 +4,7 @@
 
 更新时间：2025.3.24
 
-## 第一步：获取 hvisor 源码并编译
+## 第一步：获取 hvisor 源码并进行编译
 
 首先需要安装 `loongarch64-unknown-linux-gnu-` 工具链，请从 <https://github.com/sunhaiyong1978/CLFS-for-LoongArch/releases/download/8.0/loongarch64-clfs-8.0-cross-tools-gcc-full.tar.xz> 下载并解压到本地，然后请将 `cross-tools/bin` 目录添加到你的 `PATH` 环境变量中，保证 `loongarch64-unknown-linux-gnu-gcc` 等工具可以被 shell 直接调用。
 
@@ -109,7 +109,7 @@ cd hvisor_uefi_packer
 5. 编译 root linux，生成的 `vmlinux` 内部包括 root linux 的 dtb 和 buildroot rootfs（initramfs），请记录这个 root linux 的 `vmlinux` 的 entry 地址，和文件路径，后续需要在 hvisor 和 hvisor uefi packer 中使用。
 6. 结束，我们最终需要的就是这个 root linux 的 `vmlinux.bin`。
 
-### 6. 编译 UEFI 镜像
+## 第三步：编译 UEFI 镜像
 
 由于 3A5000 以及之后的 3 系 CPU 的主板均采用 UEFI 启动，所以只能通过 efi 镜像的方法启动 hvisor。
 
@@ -135,9 +135,9 @@ ARCH=loongarch64 BOARD=ls3a5000 ./make_image
 </div>
 
 
-## 上板启动
+## 第四步：上板启动
 
-主板上电开机，按 **F12** 进入UEFI Boot Menu，选择你插入的 U 盘，在 UEFI Boot Menu 中选择 U 盘启动，即可进入 hvisor，然后自动进入 root linux。
+主板上电开机，按 **F12** 进入UEFI Boot Menu，在目录选择 U 盘启动，即可进入 hvisor，然后自动进入 root linux。
 
 ## 启动 nonroot
 
