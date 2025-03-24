@@ -1,4 +1,4 @@
-# 在龙芯3A5000主板（7A2000）上启动 hvisor
+# 在龙芯 3A5000主板（7A2000）上启动 hvisor
 
 韩喻泷 <wheatfox17@icloud.com>
 
