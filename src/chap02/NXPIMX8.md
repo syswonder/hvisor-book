@@ -142,7 +142,7 @@ make cp
 * Image：root linux镜像，也可以用作non root linux镜像
 * linux1.dtb, linux2.dtb：root linux和non root linux的设备树
 * hvisor.bin：hvisor镜像
-* OK8MP-C.dtb：这个本质上不需要了，但因为历史原因仍需要。可以用linux1.dtb改个名放在这里
+* OK8MP-C.dtb：这个用于uboot启动时做一些检查，本质没什么用，可以从这里获取[OK8MP-C.dts](https://github.com/KouweiLee/tftp/blob/82545a7c83460747056ca35022de94c2ea365d29/OK8MP-C.dts)
 
 启动NXP板子：
 
