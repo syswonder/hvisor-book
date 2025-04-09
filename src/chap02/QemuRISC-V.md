@@ -78,13 +78,36 @@ sudo umount rootfs/dev/pts
 sudo umount rootfs/dev
 sudo umount rootfs
 ```
-# 运行hvisor
-将做好的根文件系统、Linux内核镜像放在hvisor目录下的指定位置，在hvisor根目录下执行`make run ARCH=riscv64`即可
 
-默认情况下使用 PLIC，执行`make run ARCH=riscv64 IRQ=aia`开启AIA规范
+# 运行hvisor
+首先将[hvisor 代码仓库](https://github.com/KouweiLee/hvisor)拉到本地，并在 hvisor/platform/riscv/BOARD/image 文件夹下（其中BOARD为要启动的类型），将之前编译好的根文件系统、Linux 内核镜像分别放在 virtdisk、kernel 目录下，并分别重命名为 rootfs1.ext4、Image。
+
+> TODO: rootfs-busybox.qcow2 需要的生成方式
+
+第二步，编译设备树文件，进入hvisor/platform/aarch64/BOARD/image/dts 目录，执行`make all`编译设备树
+
+之后，在 hvisor 目录下，执行：`make run ARCH=riscv64 BOARD=qemu-plic`
+
+或执行`make run ARCH=riscv64 BOARD=aia`开启AIA规范
+
+构建成功后，启动时若发现 QEMU 阻塞，是入口处设置了 SIGTRAP 断点所致，在 monitor 中执行 continue 即可进入 hvisor
+
+将上述命令中的 run 替换为 gdb 以调试模式运行，替换为 monitor 启动调试器
+
+> 提示缺少`gdb-multiarch`时，可以执行指令：
+>
+> ```
+> sudo apt install gdb-multiarch
+> ```
 
 # 启动non-root linux
-使用 hvisor-tool 生成hvisor.ko文件，之后在 QEMU 上即可通过 root linux-zone0 启动 zone1-linux。
+首先完成最新版本的 hvisor-tool 的编译。具体请参考[hvisor-tool](https://github.com/syswonder/hvisor-tool)的 README。例如，若要编译面向 riscv 的命令行工具，且 Hvisor 环境中的 Linux 镜像编译来源的源码位于 `~/linux`，则可执行
+
+```
+make all ARCH=riscv LOG=LOG_WARN KDIR=~/linux
+```
+
+> 请务必保证 Hvisor 中的Root Linux 镜像是由编译 hvisor-tool 时参数选项中的 Linux 源码目录编译产生。
 
 启动root linux后，/home目录下执行
 ```bash
@@ -94,3 +117,5 @@ mkdir -p /dev/pts
 mount -t devpts devpts /dev/pts
 nohup ./hvisor zone start linux2-aia.json && cat nohup.out | grep "char device" && script /dev/null
 ```
+
+> 若 shutdown non-root linux时，反复发生rcu超时，无法关闭属于正常现象
