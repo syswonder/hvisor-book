@@ -157,7 +157,7 @@ sudo umount rootfs
 
 ## 六、编译和运行 hvisor
 
-首先将[hvisor 代码仓库](https://github.com/KouweiLee/hvisor)拉到本地，并在 hvisor/platform/aarch64/BOARD/image 文件夹下（其中BOARD为要启动的类型），将之前编译好的根文件系统、Linux 内核镜像分别放在 virtdisk、kernel 目录下，并分别重命名为 rootfs1.ext4、Image。
+首先将[hvisor 代码仓库](https://github.com/syswonder/hvisor)拉到本地，并在 hvisor/platform/aarch64/BOARD/image 文件夹下（其中BOARD为要启动的类型），将之前编译好的根文件系统、Linux 内核镜像分别放在 virtdisk、kernel 目录下，并分别重命名为 rootfs1.ext4、Image。
 
 第二步，编译设备树文件，进入hvisor/platform/aarch64/BOARD/image/dts 目录，执行`make all`编译设备树
 
@@ -192,9 +192,9 @@ make all ARCH=arm64 LOG=LOG_WARN KDIR=~/linux
 
 > 请务必保证 Hvisor 中的Root Linux 镜像是由编译 hvisor-tool 时参数选项中的 Linux 源码目录编译产生。
 
-编译完成后，将 driver/hvisor.ko、tools/hvisor复制到 image/virtdisk/rootfs1.ext4 根文件系统中启动 zone1 linux 的目录（例如/same_path/）；再将 zone1 的内核镜像（如果是与 zone0 相同的 Linux，复制一份 image/aarch64/kernel/Image 即可）、设备树（image/aarch64/linux2.dtb）放在相同目录（/same_path/），并重命名为 Image、linux2.dtb。
+编译完成后，将 output/hvisor.ko、output/hvisor复制到 hvisor/platform/aarch64/BOARD/image/virtdisk/rootfs1.ext4 根文件系统中启动 zone1 linux 的目录（例如/same_path/）；再将 zone1 的内核镜像（如果是与 zone0 相同的 Linux，复制一份 BOARD/image/kernel/Image 即可）、设备树（BOARD/image/dts/linux2.dtb）、配置文件（BOARD/configs/zone1-linux.json）放在相同目录（/same_path/），并重命名为 Image、linux2.dtb、zone1-linux.json。
 
-之后需要为Zone1 linux制作一个根文件系统。可以将 image/aarch64/virtdisk 中的 rootfs1.ext4 复制一份，也可以重复第4步（最好改小镜像大小），并改名为 rootfs2.ext4。之后将rootfs2.ext4放入rootfs1.ext4 的相同目录（/same_path/）。
+之后需要为Zone1 linux制作一个根文件系统。可以将 BOARD/image/virtdisk 中的 rootfs1.ext4 复制一份，也可以重复第4步（最好改小镜像大小），并改名为 rootfs2.ext4。之后将rootfs2.ext4放入rootfs1.ext4 的相同目录（/same_path/）。
 
 > 如果遇到rootfs1.ext4容量不够，则可以参考[img扩容](https://blog.syswonder.org/#/2023/20230421_ARM64-QEMU-jailhouse?id=_2-img%e6%89%a9%e5%ae%b9)为rootfs1.ext4扩容。
 
