@@ -34,6 +34,8 @@
 	
     - [UBOOT FIT 镜像制作、加载与启动](./chap02/subchap01/UbootFitImage-ZCU102.md)
 
+- [RK3588 hvisor 快速上手](./chap02/RK3588.md)
+
 - [FPGA 香山昆明湖快速上手]()
 
 
