@@ -1,4 +1,5 @@
 # Board ZCU102 hvisor 多模式启动
+任航麒(2572131118@qq.com)
 ## 在 ZCU102 开发板 SD mode 下启动 Hvisor 
 ### 准备 SD 卡
 1. 准备一块标准 SD 卡，对其进行分区，一块为 Boot 分区（FAT32），其余为文件系统分区（EXT4），windows 分区可以使用 [DiskGenius](https://www.diskgenius.cn/download.php)，Linux 分区可以使用 [fdisk](https://www.cnblogs.com/renshengdezheli/p/13941563.html)、[mkfs](https://blog.csdn.net/linkedin_35878439/article/details/82020925)
