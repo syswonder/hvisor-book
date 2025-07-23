@@ -208,7 +208,7 @@ vim zones.json # 由于 hvisor 暂未支持 iommu，对于 PCIe 设备的 DMA，
 之后会自动启动 nonroot（一些相关配置文件位于 root linux 的 `/tool` 目录内，包括提供给 hvisor-tool 的 nonroot zone 配置 json 以及 virtio 配置 json 文件），启动 nonroot 后在 root linux 终端输入 `screen /dev/pts/0` 或 `screen /dev/pts/1` 或 `screen /dev/pts/2` （分别对应 linux1-pts0, linux2-pts1, linux3-pts2 三个 pts），你会看到一个打印了 nonroot 字样的 bash 出现，你可以在使用 screen 时按 `CTRL+A D` 快捷键 detach（请记住显示的 screen session 名称 / ID），此时会返回 root linux，如果希望返回 nonroot linux，则运行
 
 ```bash
-screen -r {刚才的session全名或者只输入最前面的 ID}
+screen -r {刚才的 session 全名或者只输入最前面的 PID}
 ```
 
 之后会返回 nonroot linux 的 bash。
