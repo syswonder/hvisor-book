@@ -45,7 +45,6 @@ make -j$(nproc)
 ```bash
 # 请注意，qemu-9.0.1 的父目录可以随着你的实际安装位置灵活调整。另外需要把其放在 $PATH 变量开头。
 export PATH="/path/to/qemu-9.0.1/build:$PATH"
-```
 
 随后即可在当前终端 `source ~/.bashrc` 更新系统路径，或者直接重启一个新的终端。此时可以确认 qemu 版本，如果显示为 qemu-9.0.1，则表示安装成功：
 
