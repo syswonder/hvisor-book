@@ -175,11 +175,29 @@ vim zones.json # 由于 hvisor 暂未支持 iommu，对于 PCIe 设备的 DMA，
 
 ## 第四步：上板启动
 
+### 3A5000 主板 CPU UART0 连接
+
+请参考下图中的连线将 3A5000 主板的 UART0 连接到你的串口转接器上（CPU UART0 引脚位于 VGA connector 旁边）：
+
+![img](img/3a5000_uart.png)
+
+其中从左到右（图中三角形标识的一端为 1 号引脚 RX）分别为 RX（1）、TX（2）、GND（3） 三个引脚，分别对应连接到你的 USB 转接器的 TX、RX、GND 引脚上，如图所示：
+
+![img](img/connector.png)
+
+<div class="warning">
+    <h3>请注意</h3>
+    <p> 请将串口转接器配置为 RS232 电压模式，以及 USB 串口转接器的 TX 接主板 RX、RX 接主板 TX、GND 接主板 GND（可不接地）。</p>
+</div>
+
+### 主板开机
+
 主板上电开机，按 **F12** 进入UEFI Boot Menu，在目录选择 U 盘启动，即可进入 hvisor，然后自动进入 root linux。
+如果您接入了 VGA 屏幕，也可以看到启动最开始的一部分 UEFI loader 的日志输出，**之后将转为通过 UART0 输出（hvisor 以及 root/nonroot linux 均使用串口进行输入和输出）**。
 
 ## 启动 nonroot
 
-启动后在 root linux 的 bash 内输入：
+启动后在串口端可以看到 hvisor 的 log 以及 root linux 的 bash，输入：
 
 ```bash
 ./daemon.sh
@@ -187,7 +205,7 @@ vim zones.json # 由于 hvisor 暂未支持 iommu，对于 PCIe 设备的 DMA，
 # (linux1-pts0, linux2-pts1, linux3-pts2 by default)
 ```
 
-之后会自动启动 nonroot（一些相关配置文件位于 root linux 的 `/tool` 目录内，包括提供给 hvisor-tool 的 nonroot zone 配置 json 以及 virtio 配置 json 文件），之后回自动打开一个screen 进程连接 nonroot linux 的 virtio-console，你会看到一个打印了 nonroot 字样的 bash 出现，你可以在使用 screen 时按 `CTRL+A D` 快捷键 detach（请记住显示的 screen session 名称 / ID），此时会返回 root linux，如果希望返回 nonroot linux，则运行
+之后会自动启动 nonroot（一些相关配置文件位于 root linux 的 `/tool` 目录内，包括提供给 hvisor-tool 的 nonroot zone 配置 json 以及 virtio 配置 json 文件），之后回自动打开一个 screen 进程连接 nonroot linux 的 virtio-console，你会看到一个打印了 nonroot 字样的 bash 出现，你可以在使用 screen 时按 `CTRL+A D` 快捷键 detach（请记住显示的 screen session 名称 / ID），此时会返回 root linux，如果希望返回 nonroot linux，则运行
 
 ```bash
 screen -r {刚才的session全名或者只输入最前面的 ID}
