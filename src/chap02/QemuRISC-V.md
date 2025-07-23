@@ -78,7 +78,7 @@ sudo umount rootfs
 
 之后，在 hvisor 目录下，执行：`make run ARCH=riscv64 BOARD=qemu-plic`
 
-或执行`make run ARCH=riscv64 BOARD=aia`开启AIA规范
+或执行`make run ARCH=riscv64 BOARD=aia`开启AIA规范 
 
 如在 Qemu 入口处遇见 SIGTRAP 断点，请修改 `hvisor/platform/riscv64/BOARD/platform.mk` 文件，移除 `QEMU_ARGS` 中的 -S 选项
 
