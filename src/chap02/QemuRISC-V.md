@@ -78,13 +78,33 @@ sudo umount rootfs/dev/pts
 sudo umount rootfs/dev
 sudo umount rootfs
 ```
-# 运行hvisor
-将做好的根文件系统、Linux内核镜像放在hvisor目录下的指定位置，在hvisor根目录下执行`make run ARCH=riscv64`即可
 
-默认情况下使用 PLIC，执行`make run ARCH=riscv64 IRQ=aia`开启AIA规范
+# 运行hvisor
+首先将[hvisor 代码仓库](https://github.com/syswonder/hvisor)拉到本地，并在 hvisor/platform/riscv64/BOARD/image 文件夹下（其中BOARD为要启动的类型），将之前编译好的根文件系统、Linux 内核镜像分别放在 virtdisk、kernel 目录下，并分别重命名为 rootfs1.ext4、Image。
+
+> riscv版本还需要busybox文件，可以使用`qemu-img convert -f raw -O qcow2 rootfs1.ext4 rootfs-busybox.qcow2`生成
+
+第二步，编译设备树文件，进入hvisor/platform/riscv64/BOARD/image/dts 目录，执行`make all`编译设备树
+
+之后，在 hvisor 目录下，执行：`make run ARCH=riscv64 BOARD=qemu-plic`
+
+或执行`make run ARCH=riscv64 BOARD=aia`开启AIA规范
+
+如在 Qemu 入口处遇见 SIGTRAP 断点，请修改 `hvisor/platform/riscv64/BOARD/platform.mk` 文件，移除 `QEMU_ARGS` 中的 -S 选项
 
 # 启动non-root linux
-使用 hvisor-tool 生成hvisor.ko文件，之后在 QEMU 上即可通过 root linux-zone0 启动 zone1-linux。
+首先完成最新版本的 hvisor-tool 的编译。具体请参考[hvisor-tool](https://github.com/syswonder/hvisor-tool)的 README。例如，若要编译面向 riscv 的命令行工具，且 Hvisor 环境中的 Linux 镜像编译来源的源码位于 `~/linux`，则可执行
+
+```
+make all ARCH=riscv LOG=LOG_WARN KDIR=~/linux
+```
+
+> 请务必保证 Hvisor 中的Root Linux 镜像是由编译 hvisor-tool 时参数选项中的 Linux 源码目录编译产生。
+
+编译完成后，将 output/hvisor.ko、output/hvisor复制到 hvisor/platform/riscv64/BOARD/image/virtdisk/rootfs1.ext4 根文件系统中启动 zone1 linux 的目录（例如/same_path/）；再将 zone1 的内核镜像（如果是与 zone0 相同的 Linux，复制一份 BOARD/image/kernel/Image 即可）、设备树（BOARD/image/dts/linux2.dtb）、配置文件（BOARD/configs/zone1-linux.json）放在相同目录（/same_path/），并重命名为 Image、linux2.dtb、linux2.json。
+
+之后需要为Zone1 linux制作一个根文件系统。可以将 BOARD/image/virtdisk 中的 rootfs1.ext4 复制一份，也可以重新制作根文件系统（最好改小镜像大小），并改名为 rootfs2.ext4。之后将rootfs2.ext4放入rootfs1.ext4 的相同目录（/same_path/）。
+
 
 启动root linux后，/home目录下执行
 ```bash
@@ -92,5 +112,5 @@ sudo insmod hvisor.ko
 rm nohup.out
 mkdir -p /dev/pts
 mount -t devpts devpts /dev/pts
-nohup ./hvisor zone start linux2-aia.json && cat nohup.out | grep "char device" && script /dev/null
+nohup ./hvisor zone start linux2.json && cat nohup.out | grep "char device" && script /dev/null # 或linux2-aia.json
 ```

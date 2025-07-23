@@ -41,7 +41,7 @@ make -j$(nproc)
 
 ```
 # 请注意，qemu-9.0.1 的父目录可以随着你的实际安装位置灵活调整。另外需要把其放在$PATH变量开头。
-export PATH=/path/to/qemu-7.2.12/build:$PATH
+export PATH=/path/to/qemu-9.0.1/build:$PATH
 ```
 
 随后即可在当前终端 `source ~/.bashrc` 更新系统路径，或者直接重启一个新的终端。此时可以确认 qemu 版本，如果显示为qemu-9.0.1，则表示安装成功：
@@ -157,13 +157,9 @@ sudo umount rootfs
 
 ## 六、编译和运行 hvisor
 
-首先将[hvisor 代码仓库](https://github.com/KouweiLee/hvisor)拉到本地，之后切换到 dev 分支，并在 hvisor/images/aarch64 文件夹下，将之前编译好的根文件系统、Linux 内核镜像分别放在 virtdisk、kernel 目录下，并分别重命名为 rootfs1.ext4、Image。
+首先将[hvisor 代码仓库](https://github.com/syswonder/hvisor)拉到本地，并在 hvisor/platform/aarch64/BOARD/image 文件夹下（其中BOARD为要启动的类型），将之前编译好的根文件系统、Linux 内核镜像分别放在 virtdisk、kernel 目录下，并分别重命名为 rootfs1.ext4、Image。
 
-第二步，需要准备好各配置文件，以[virtio-blk&console示例](https://github.com/syswonder/hvisor-tool/tree/main/examples/qemu-aarch64/with_virtio_blk_console)为例，该目录下包含6个文件，分别对这6个文件进行如下操作：
-
-* linux1.dts：Root Linux的设备树，hvisor启动时会使用。
-* linux2.dts：Zone1 Linux的设备树，hvisor-tool启动zone1时会需要。需要将linux1.dts、linux2.dts替换 devicetree 目录下的同名文件，并执行`make all`进行编译，得到linux1.dtb、linux2.dtb。
-* qemu_aarch64.rs、qemu-aarch64.mk则直接替换掉hvisor仓库中的同名文件。
+第二步，编译设备树文件，进入hvisor/platform/aarch64/BOARD/image/dts 目录，执行`make all`编译设备树
 
 之后，在 hvisor 目录下，执行：
 
@@ -196,9 +192,9 @@ make all ARCH=arm64 LOG=LOG_WARN KDIR=~/linux
 
 > 请务必保证 Hvisor 中的Root Linux 镜像是由编译 hvisor-tool 时参数选项中的 Linux 源码目录编译产生。
 
-编译完成后，将 driver/hvisor.ko、tools/hvisor复制到 image/virtdisk/rootfs1.ext4 根文件系统中启动 zone1 linux 的目录（例如/same_path/）；再将 zone1 的内核镜像（如果是与 zone0 相同的 Linux，复制一份 image/aarch64/kernel/Image 即可）、设备树（image/aarch64/linux2.dtb）放在相同目录（/same_path/），并重命名为 Image、linux2.dtb。
+编译完成后，将 output/hvisor.ko、output/hvisor复制到 hvisor/platform/aarch64/BOARD/image/virtdisk/rootfs1.ext4 根文件系统中启动 zone1 linux 的目录（例如/same_path/）；再将 zone1 的内核镜像（如果是与 zone0 相同的 Linux，复制一份 BOARD/image/kernel/Image 即可）、设备树（BOARD/image/dts/linux2.dtb）、配置文件（BOARD/configs/zone1-linux.json）放在相同目录（/same_path/），并重命名为 Image、linux2.dtb、zone1-linux.json。
 
-之后需要为Zone1 linux制作一个根文件系统。可以将 image/aarch64/virtdisk 中的 rootfs1.ext4 复制一份，也可以重复第4步（最好改小镜像大小），并改名为 rootfs2.etx4。之后将rootfs2.ext4放入rootfs1.ext4 的相同目录（/same_path/）。
+之后需要为Zone1 linux制作一个根文件系统。可以将 BOARD/image/virtdisk 中的 rootfs1.ext4 复制一份，也可以重复第4步（最好改小镜像大小），并改名为 rootfs2.ext4。之后将rootfs2.ext4放入rootfs1.ext4 的相同目录（/same_path/）。
 
 > 如果遇到rootfs1.ext4容量不够，则可以参考[img扩容](https://blog.syswonder.org/#/2023/20230421_ARM64-QEMU-jailhouse?id=_2-img%e6%89%a9%e5%ae%b9)为rootfs1.ext4扩容。
 
