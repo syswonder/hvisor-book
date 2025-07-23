@@ -27,7 +27,7 @@ ls gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin/
 # 安装编译所需的依赖包
 sudo apt install autoconf automake autotools-dev curl libmpc-dev libmpfr-dev libgmp-dev \
     gawk build-essential bison flex texinfo gperf libtool patchutils bc \
-    zlib1g-dev libexpat-dev pkg-config  libglib2.0-dev libpixman-1-dev libsdl2-dev \
+    zlib1g-dev libexpat-dev pkg-config libglib2.0-dev libpixman-1-dev libsdl2-dev \
     git tmux python3 python3-pip ninja-build
 
 # 下载源码并解压
@@ -276,10 +276,14 @@ make all ARCH=arm64 LOG=LOG_WARN KDIR="${LINUX_PATH}"
 
 > 请务必保证 hvisor 中的 root linux 镜像是由编译 hvisor-tool 时参数选项中的 Linux 源代码目录编译产生。
 
-> 请务必保证 hvisor-tool 编译时采用的 glibc 版本与 root linux 文件系统的 glibc 版本一致，否则 hvisor-tool 的 driver 会无法加载。
+> 请务必保证 hvisor-tool 编译时采用的 linux header 版本与 root linux 的 linux header 版本一致，否则 hvisor-tool 的 driver 可能会无法加载。
 > 可以通过使用与第三步中的 root linux 相同的交叉编译工具链进行编译，即使用第一步的交叉编译器路径进行配置。
 
 编译完成后，需要将 hvisor-tool 的可执行文件 `tools/hvisor` 和内核模块 `driver/hvisor.ko` 复制到 root linux 的根文件系统中启动 zone1 linux 的目录，例如 `/root`，再同时将 zone1 的根文件系统、内核镜像、以及编译后的设备树放在同一目录。
+
+具体的文件名需要与 hvisor-tool 配置文件（来自 hvisor 的 `platform/aarch64/qemu-gicv3/configs/zone1-linux-virtio.json` 和 `platform/aarch64/qemu-gicv3/configs/zone1-linux.json`）的内容保持一致。
+
+按照 hvisor 提供的配置文件，可执行命令如下。
 
 ```bash
 # 回到创建的 root linux 根文件系统时的目录
@@ -294,18 +298,23 @@ sudo mount -t ext4 rootfs1.img rootfs/
 sudo cp "${HVISOR_TOOL_PATH}/driver/hvisor.ko" rootfs/root/
 sudo cp "${HVISOR_TOOL_PATH}/tools/hvisor" rootfs/root/
 
-# 复制 zone1 linux 的根文件系统、内核镜像、以及编译后的设备树
-sudo cp rootfs2.img rootfs/root/zone1-linux.ext4
-sudo cp "${LINUX_PATH}/arch/arm64/boot/Image" rootfs/root/zone1-linux.img
-sudo cp "${HVISOR_PATH}/platform/aarch64/qemu-gicv3/image/dts/zone1-linux.dtb" rootfs/root/zone1-linux.dtb
+# 复制 hvisor-tool 的配置文件到 root 路径下
+sudo cp "${HVISOR_PATH}/platform/aarch64/qemu-gicv3/configs/zone1-linux-virtio.json" \
+    rootfs/root/zone1-linux-virtio.json
+sudo cp "${HVISOR_PATH}/platform/aarch64/qemu-gicv3/configs/zone1-linux.json" \
+    rootfs/root/zone1-linux.json
 
-# 此时还需要创建 hvisor-tool 的配置文件，virtio_cfg.json 和 zone1_linux.json，并放到 root 路径下
-# 文件内容见后
-sudo vi rootfs/root/virtio_cfg.json
-sudo vi rootfs/root/zone1_linux.json
+# 复制 zone1 linux 的根文件系统、内核镜像、以及编译后的设备树
+sudo cp rootfs2.img \
+    rootfs/root/rootfs2.ext4
+sudo cp "${LINUX_PATH}/arch/arm64/boot/Image" \
+    rootfs/root/Image
+sudo cp "${HVISOR_PATH}/platform/aarch64/qemu-gicv3/image/dts/zone1-linux.dtb" \
+    rootfs/root/zone1-linux.dtb
 
 # 卸载
 sudo umount rootfs
+
 # 如果之前是复制的 rootfs1.img，则还需重新复制一份，命令如下
 # 切换到 hvisor 目录
 # ROOTFS1_PATH="<路径>/rootfs1.img"
@@ -313,132 +322,38 @@ sudo umount rootfs
 # cp "${ROOTFS1_PATH}" platform/aarch64/qemu-gicv3/image/virtdisk/rootfs1.ext4
 ```
 
-> `virtio_cfg.json` 的内容如下。
-> ```json
-> {
->   "zones": [
->     {
->       "id": 1,
->       "memory_region": [
->         {
->           "zone0_ipa": "0x50000000",
->           "zonex_ipa": "0x50000000",
->           "size": "0x30000000"
->         }
->       ],
->       "devices": [
->         {
->           "type": "blk",
->           "addr": "0xa003c00",
->           "len": "0x200",
->           "irq": 78,
->           "img": "zone1-linux.ext4",
->           "status": "enable"
->         },
->         {
->           "type": "console",
->           "addr": "0xa003800",
->           "len": "0x200",
->           "irq": 76,
->           "status": "enable"
->         }
->       ]
->     }
->   ]
-> }
-> ```
->
-> `zone1_linux.json` 的内容如下。
-> ```json
-> {
->   "arch": "arm64",
->   "name": "zone1-linux",
->   "zone_id": 1,
->   "cpus": [
->     2,
->     3
->   ],
->   "memory_regions": [
->     {
->       "type": "ram",
->       "physical_start": "0x50000000",
->       "virtual_start": "0x50000000",
->       "size": "0x30000000"
->     },
->     {
->       "type": "virtio",
->       "physical_start": "0xa000000",
->       "virtual_start": "0xa000000",
->       "size": "0x4000"
->     }
->   ],
->   "interrupts": [
->     76,
->     78
->   ],
->   "ivc_configs": [],
->   "kernel_filepath": "./zone1-linux.img",
->   "dtb_filepath": "./zone1-linux.dtb",
->   "kernel_load_paddr": "0x50400000",
->   "dtb_load_paddr": "0x50000000",
->   "entry_point": "0x50400000",
->   "arch_config": {
->     "gic_version": "v3",
->     "gicd_base": "0x8000000",
->     "gicd_size": "0x10000",
->     "gicr_base": "0x80a0000",
->     "gicr_size": "0xf60000",
->     "gits_base": "0x8080000",
->     "gits_size": "0x20000"
->   }
-> }
-> ```
-
 > 如果遇到 `rootfs1.ext4` 容量不够，则可以参考 [img 扩容](https://blog.syswonder.org/#/2023/20230421_ARM64-QEMU-jailhouse?id=_2-img%e6%89%a9%e5%ae%b9) 为 `rootfs1.ext4` 扩容。
 
-之后在 QEMU 上即可通过 root linux-zone0 启动 zone1-linux。
-
-具体命令如下。
-
-首先启动 QEMU，然后
+之后在 QEMU 上即可通过 root linux 启动 zone1-linux。具体命令如下。
 
 ```bash
 # 启动 QEMU
 make ARCH=aarch64 LOG=info BOARD=qemu-gicv3 run
+```
 
+```
 # 启动 root linux
 bootm 0x40400000 - 0x40000000
 ```
 
 ```bash
-insmod root/hvisor.ko
+cd root
+insmod hvisor.ko
 mount -t proc proc /proc
 mount -t sysfs sysfs /sys
 mkdir -p /dev/pts
 mount -t devpts devpts /dev/pts
 
-cd root
 rm nohup.out
-nohup ./hvisor virtio start virtio_cfg.json &
 
-# 查看 zone
-./hvisor zone list
-
+# 启动 zone1-linux 的 virtio
+nohup ./hvisor virtio start zone1-linux-virtio.json &
 # 启动 zone1-linux
-./hvisor zone start zone1_linux.json && \
+./hvisor zone start zone1-linux.json && \
 cat nohup.out | grep "char device" && \
 script /dev/null
-
-# 查看 zone，应该出现 zone1-linux，且状态为 running
-./hvisor zone list
-
-# 关闭 zone 1
-./hvisor zone shutdown -id 1
-
-# 查看 zone
-./hvisor zone list
 ```
 
 > 启动 zone1-linux 的详细步骤参看 hvisor-tool 的 README 以及 [启动示例](https://github.com/syswonder/hvisor-tool/tree/main/examples/qemu-aarch64/with_virtio_blk_console/README.md)。
 
-> 如果显示 virtio 出现 WARNING 或者 ERROR，可以查看 `nohup.out` 查看详细信息。
+> 如果显示 virtio 出现 WARNING 或者 ERROR，可以查看 `nohup.out` 查看详细信息，或者使用 `dmesg` 命令查看内核日志。
