@@ -16,8 +16,6 @@ qemu-system-riscv64 --version
 # 安装交叉编译器
 riscv的交叉编译器需从riscv-gnu-toolchain获取并编译。
 ```
-sudo apt-get install autoconf automake autotools-dev curl python3 python3-pip libmpc-dev libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev ninja-build git cmake libglib2.0-dev libslirp-dev
-
 git clone https://github.com/riscv/riscv-gnu-toolchain
 cd riscv-gnu-toolchain
 #ubuntu
@@ -78,7 +76,7 @@ sudo umount rootfs
 
 之后，在 hvisor 目录下，执行：`make run ARCH=riscv64 BOARD=qemu-plic`
 
-或执行`make run ARCH=riscv64 BOARD=aia`开启AIA规范 
+或执行`make run ARCH=riscv64 BOARD=aia`开启AIA规范
 
 如在 Qemu 入口处遇见 SIGTRAP 断点，请修改 `hvisor/platform/riscv64/BOARD/platform.mk` 文件，移除 `QEMU_ARGS` 中的 -S 选项
 
