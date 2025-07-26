@@ -16,25 +16,13 @@ qemu-system-riscv64 --version
 # 安装交叉编译器
 riscv的交叉编译器需从riscv-gnu-toolchain获取并编译。
 ```
-# 安装必要工具
-sudo apt-get install autoconf automake autotools-dev curl python3 python3-pip libmpc-dev libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev ninja-build git cmake libglib2.0-dev libslirp-dev
-
 git clone https://github.com/riscv/riscv-gnu-toolchain
 cd riscv-gnu-toolchain
-git rm qemu 
-git submodule update --init --recursive
-#上述操作会占用超过5GB以上磁盘空间
-# 如果git报网络错误，可以执行：
-git config --global http.postbuffer 524288000
-```
-之后开始编译工具链：
-```
-cd riscv-gnu-toolchain
-mkdir build
-cd build
-../configure --prefix=/opt/riscv64
-sudo make linux -j $(nproc)
-# 编译完成后，将工具链加入环境变量
+#ubuntu
+sudo apt-get install autoconf automake autotools-dev curl python3 python3-pip python3-tomli libmpc-dev libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev ninja-build git cmake libglib2.0-dev libslirp-dev gdb
+
+./configure --prefix=/path/to/riscv #你自己的存储路径
+make linux
 echo 'export PATH=/opt/riscv64/bin:$PATH' >> ~/.bashrc
 source ~/.bashrc
 ```
@@ -45,9 +33,9 @@ git clone https://github.com/torvalds/linux -b v6.2 --depth=1
 cd linux
 git checkout v6.2
 make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- defconfig
-make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- modules -j$(nproc)
 # 开始编译
 make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- Image -j$(nproc)
+make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- modules -j$(nproc)
 
 ```
 # 制作ubuntu根文件系统
@@ -93,7 +81,7 @@ sudo umount rootfs
 如在 Qemu 入口处遇见 SIGTRAP 断点，请修改 `hvisor/platform/riscv64/BOARD/platform.mk` 文件，移除 `QEMU_ARGS` 中的 -S 选项
 
 # 启动non-root linux
-首先完成最新版本的 hvisor-tool 的编译。具体请参考[hvisor-tool](https://github.com/syswonder/hvisor-tool)的 README。例如，若要编译面向 riscv 的命令行工具，且 Hvisor 环境中的 Linux 镜像编译来源的源码位于 `~/linux`，则可执行
+首先完成最新版本的 hvisor-tool 的编译。具体请参考[hvisor-tool](https://github.com/syswonder/hvisor-tool)的 README（是riscv64-linux-gnu-gcc工具链，通过ubuntu的apt直接安装即可）。例如，若要编译面向 riscv 的命令行工具，且 Hvisor 环境中的 Linux 镜像编译来源的源码位于 `~/linux`，则可执行
 
 ```
 make all ARCH=riscv LOG=LOG_WARN KDIR=~/linux
@@ -101,9 +89,9 @@ make all ARCH=riscv LOG=LOG_WARN KDIR=~/linux
 
 > 请务必保证 Hvisor 中的Root Linux 镜像是由编译 hvisor-tool 时参数选项中的 Linux 源码目录编译产生。
 
-编译完成后，将 output/hvisor.ko、output/hvisor复制到 hvisor/platform/riscv64/BOARD/image/virtdisk/rootfs1.ext4 根文件系统中启动 zone1 linux 的目录（例如/same_path/）；再将 zone1 的内核镜像（如果是与 zone0 相同的 Linux，复制一份 BOARD/image/kernel/Image 即可）、设备树（BOARD/image/dts/linux2.dtb）、配置文件（BOARD/configs/zone1-linux.json）放在相同目录（/same_path/），并重命名为 Image、linux2.dtb、linux2.json。
+编译完成后，将 output/hvisor.ko、output/hvisor复制到 hvisor/platform/riscv64/BOARD/image/virtdisk/rootfs1.ext4 根文件系统中启动 zone1 linux 的目录（例如/same_path/）；再将 zone1 的内核镜像（如果是与 zone0 相同的 Linux，复制一份 BOARD/image/kernel/Image 即可）、设备树（BOARD/image/dts/linux2.dtb）、配置文件（BOARD/configs/zone1-linux.json）放在相同目录（/same_path/），并重命名为 Image、linux2.dtb、linux2.json(需要根据zone1-linux.json里面内容进行命名文件名)。
 
-之后需要为Zone1 linux制作一个根文件系统。可以将 BOARD/image/virtdisk 中的 rootfs1.ext4 复制一份，也可以重新制作根文件系统（最好改小镜像大小），并改名为 rootfs2.ext4。之后将rootfs2.ext4放入rootfs1.ext4 的相同目录（/same_path/）。
+之后需要为Zone1 linux制作一个根文件系统。可以将 BOARD/image/virtdisk 中的 rootfs1.ext4 复制一份，也可以重新制作根文件系统（最好改小镜像大小），并改名为 rootfs2.ext4(需要根据zone1-linux.json里面内容进行命名文件名)。之后将rootfs2.ext4放入rootfs1.ext4 的相同目录（/same_path/）。
 
 
 启动root linux后，/home目录下执行
