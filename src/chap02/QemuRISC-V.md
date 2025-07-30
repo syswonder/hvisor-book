@@ -41,9 +41,9 @@ make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- modules -j$(nproc)
 ```
 qemu-aia用的是6.10-rc1:
 ```
-git clone https://github.com/torvalds/linux -b v6.10-rc1 --depth=1
+git clone https://github.com/torvalds/linux -b v6.10 --depth=1
 cd linux
-git checkout v6.10-rc1
+git checkout v6.10
 make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- defconfig
 # 开始编译
 make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- Image -j$(nproc)
@@ -122,7 +122,7 @@ rm nohup.out
 mkdir -p /dev/pts
 mount -t devpts devpts /dev/pts
 nohup ./hvisor virtio start zone1-linux-virtio.json &
-./hvisor zone start zone1_linux.json && \
+./hvisor zone start zone1-linux.json && \
 cat nohup.out | grep "char device" && \
 script /dev/null
 ```
