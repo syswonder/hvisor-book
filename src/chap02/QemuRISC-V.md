@@ -39,7 +39,7 @@ make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- Image -j$(nproc)
 make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- modules -j$(nproc)
 
 ```
-qemu-aia用的是6.10-rc1:
+qemu-aia用的是6.10:
 ```
 git clone https://github.com/torvalds/linux -b v6.10 --depth=1
 cd linux
@@ -113,7 +113,7 @@ mkdir -p /dev/pts
 mount -t devpts devpts /dev/pts
 nohup ./hvisor zone start zone1-linux.json && cat nohup.out | grep "char device" && script /dev/null
 ```
-对于qemu-aia,需启动virtio的后端
+对于qemu-aia,如果.json配置了virtio则需启动virtio的后端
 ```
 insmod hvisor.ko
 mount -t proc proc /proc
