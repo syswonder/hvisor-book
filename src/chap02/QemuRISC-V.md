@@ -28,6 +28,7 @@ source ~/.bashrc
 ```
 这样就得到了 riscv64-unknown-linux-gnu工具链。
 # 编译Linux
+qemu-plic:
 ```
 git clone https://github.com/torvalds/linux -b v6.2 --depth=1
 cd linux
@@ -37,6 +38,16 @@ make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- defconfig
 make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- Image -j$(nproc)
 make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- modules -j$(nproc)
 
+```
+qemu-aia用的是6.10:
+```
+git clone https://github.com/torvalds/linux -b v6.10 --depth=1
+cd linux
+git checkout v6.10
+make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- defconfig
+# 开始编译
+make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- Image -j$(nproc)
+make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- modules -j$(nproc)
 ```
 # 制作ubuntu根文件系统
 ```
@@ -89,16 +100,29 @@ make all ARCH=riscv LOG=LOG_WARN KDIR=~/linux
 
 > 请务必保证 Hvisor 中的Root Linux 镜像是由编译 hvisor-tool 时参数选项中的 Linux 源码目录编译产生。
 
-编译完成后，将 output/hvisor.ko、output/hvisor复制到 hvisor/platform/riscv64/BOARD/image/virtdisk/rootfs1.ext4 根文件系统中启动 zone1 linux 的目录（例如/same_path/）；再将 zone1 的内核镜像（如果是与 zone0 相同的 Linux，复制一份 BOARD/image/kernel/Image 即可）、设备树（BOARD/image/dts/linux2.dtb）、配置文件（BOARD/configs/zone1-linux.json）放在相同目录（/same_path/），并重命名为 Image、linux2.dtb、linux2.json(需要根据zone1-linux.json里面内容进行命名文件名)。
+编译完成后，将 output/hvisor.ko、output/hvisor复制到 hvisor/platform/riscv64/BOARD/image/virtdisk/rootfs1.ext4 根文件系统中启动 zone1 linux 的目录（例如/same_path/）；再将 zone1 的内核镜像（如果是与 zone0 相同的 Linux，复制一份 BOARD/image/kernel/Image 即可）、设备树（BOARD/image/dts/linux2.dtb）、配置文件（BOARD/configs/zone1-linux.json等）放在相同目录（/same_path/），并重命名为 Image、linux2.dtb、linux2.json等(需要根据.json里面内容进行命名文件名)。
 
-之后需要为Zone1 linux制作一个根文件系统。可以将 BOARD/image/virtdisk 中的 rootfs1.ext4 复制一份，也可以重新制作根文件系统（最好改小镜像大小），并改名为 rootfs2.ext4(需要根据zone1-linux.json里面内容进行命名文件名)。之后将rootfs2.ext4放入rootfs1.ext4 的相同目录（/same_path/）。
+之后需要为Zone1 linux制作一个根文件系统。可以将 BOARD/image/virtdisk 中的 rootfs1.ext4 复制一份，也可以重新制作根文件系统（最好改小镜像大小），并改名为 riscv_rootfs2.img(需要根据.json里面内容进行命名文件名)。之后将riscv_rootfs2.img放入rootfs1.ext4根文件系统中的相同目录（/same_path/）。
 
 
-启动root linux后，/home目录下执行
+对于qemu-plic,启动root linux后，/home目录下执行
 ```bash
 sudo insmod hvisor.ko
 rm nohup.out
 mkdir -p /dev/pts
 mount -t devpts devpts /dev/pts
-nohup ./hvisor zone start linux2.json && cat nohup.out | grep "char device" && script /dev/null # 或linux2-aia.json
+nohup ./hvisor zone start zone1-linux.json && cat nohup.out | grep "char device" && script /dev/null
+```
+对于qemu-aia,如果.json配置了virtio则需启动virtio的后端
+```
+insmod hvisor.ko
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+rm nohup.out
+mkdir -p /dev/pts
+mount -t devpts devpts /dev/pts
+nohup ./hvisor virtio start zone1-linux-virtio.json &
+./hvisor zone start zone1-linux.json && \
+cat nohup.out | grep "char device" && \
+script /dev/null
 ```
