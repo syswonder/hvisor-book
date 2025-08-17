@@ -1,35 +1,9 @@
 # 如何编译
 
-## 使用 Docker 编译
-### 1. 安装 Docker
-```bash
-sudo snap install docker
-```
-也可参考 [Docker 官方文档](https://docs.docker.com/install/) 安装 Docker。
 
-### 2. 构建镜像
+## Rust环境配置
 
-```bash
-make build_docker
-```
-
-此步骤构建一个 Docker 镜像，自动构建编译所需的全部依赖。
-
-### 3. 运行容器
-
-```bash
-make docker
-```
-此步骤会启动一个容器，将当前目录挂载到容器中，并进入容器的 shell。
-
-### 4. 编译
-
-在容器中执行以下命令编译即可编译。
-```bash
-make all
-```
-
-## 使用本地环境编译
+可以参考[Rust 语言圣经](https://course.rs/first-try/intro.html)配置Rust开发环境，也可参考如下的操作。
 
 ### 1. 安装 RustUp 与 Cargo
 
@@ -42,7 +16,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
 
 目前项目使用的工具链如下：
 
- - Rust nightly 2023-07-12
+ - Rust nightly-2024-05-05
  - [rustfmt](https://crates.io/crates/rustfmt)
  - [clippy](https://crates.io/crates/clippy)
  - [cargo-binutils](https://crates.io/crates/cargo-binutils/0.3.6)
@@ -72,8 +46,15 @@ Components=$(toml get -r rust-toolchain.toml toolchain.components | jq -r 'join(
 rustup install $RUST_VERSION && \
 rustup component add --toolchain $RUST_VERSION $Components
 ```
-#### (4) 编译
 
+## 编译hvisor
+首先将 [hvisor 代码仓库](https://github.com/syswonder/hvisor) 拉到本地，并切换到 dev 分支。
+```bash
+git clone -b dev https://github.com/syswonder/hvisor.git
+```
+
+运行下面这条命令进行编译：
 ```bash
 make all
 ```
+
