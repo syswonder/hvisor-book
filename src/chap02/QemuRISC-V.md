@@ -128,13 +128,18 @@ make run ARCH=riscv64 BOARD=qemu-plic
 make run ARCH=riscv64 BOARD=qemu-aia
 ```
 
-注意: 命令中包含了 -S 参数，可以看做 Qemu 虚拟机启动时的一个断点，，这时可以查看 /dev/pts/xxx, 这是 Qemu 提供的 virtio-console 暴露给 Host 使用的设备。
+注意: Makefile 中的启动命令中包含了 -S 参数，可以看做 Qemu 虚拟机启动时的一个断点，需要 qemu 收到 continue 才可以继续执行，这时可以方便地查看 /dev/pts/xxx, 可以把它看做是 Qemu 提供的 virtio-console 暴露给 Host 使用的虚拟串口设备。
 
 你可以看到如下信息：
 ```
 char device redirected to /dev/pts/4 (label serial3)
 ```
 然后，同时按下 ctrl+a, 随后输入 c，回车，即可继续执行，随后会打印 OpenSBI+Hvisor+Linux 的输出信息。
+
+可以通过如下命令连接它，随后可以像普通的 uart 那样输入输出：
+```bash
+screen /dev/pts/xxx
+```
 
 ### 4. 启动 non-root linux
 注意：Non-root 使用设备有两种方式，设备直通和 virtio，其中 virtio 设备的后端在 root zone(linux)。
