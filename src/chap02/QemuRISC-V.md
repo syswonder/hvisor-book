@@ -128,18 +128,21 @@ make run ARCH=riscv64 BOARD=qemu-plic
 make run ARCH=riscv64 BOARD=qemu-aia
 ```
 
-注意: Makefile 中的启动命令中包含了 -S 参数，可以看做 Qemu 虚拟机启动时的一个断点，需要 qemu 收到 continue 才可以继续执行，这时可以方便地查看 /dev/pts/xxx, 可以把它看做是 Qemu 提供的 virtio-console 暴露给 Host 使用的虚拟串口设备。
+注意: Makefile 中的启动命令中包含了 -S 参数，可以看做 Qemu 虚拟机启动时的一个断点，需要 Qemu 收到 continue 才可以继续执行，这时可以方便地查看 /dev/pts/xxx, 可以把它看做是 Qemu 提供的 virtio-console 暴露给 Host 使用的虚拟串口设备。
 
-你可以看到如下信息：
+你可以看到类似以下内容：
 ```
 char device redirected to /dev/pts/4 (label serial3)
 ```
-然后，同时按下 ctrl+a, 随后输入 c，回车，即可继续执行，随后会打印 OpenSBI+Hvisor+Linux 的输出信息。
+然后，同时按下 ctrl+a, 随后输入 c，回车，即可继续执行，随后会打印 OpenSBI + Hvisor + Linux 的输出信息。
 
-可以通过如下命令连接它，随后可以像普通的 uart 那样输入输出：
+为了使用上述的虚拟串口，你需要新建一个终端，然后可以通过如下命令连接它：
+
 ```bash
 screen /dev/pts/xxx
 ```
+
+注意：Qemu 只提供一个物理串口，当启动两个 zone 并且两个 zone 各自占用一个串口时，就需要使用到该虚拟串口设备。
 
 ### 4. 启动 non-root linux
 注意：Non-root 使用设备有两种方式，设备直通和 virtio，其中 virtio 设备的后端在 root zone(linux)。
@@ -184,6 +187,6 @@ script /dev/null
 ```
 注意：它们的区别在于配置不同，你可以修改配置，以自定义使用设备直通还是 virtio，以当前 hvisor 中的默认配置为例：
 
-- qemu-plic 采用的是直通的设备（尽管启动命令中为 virtio 设备，这里可以看做是直通，因为它由 qemu 提供设备后端）
+- qemu-plic 采用的是直通的设备（尽管启动命令中为 virtio 设备，这里可以看做是直通，因为它由 Qemu 提供设备后端）
 
 - qemu-aia 采用了 virtio，由 root linux 提供 virtio 设备后端（non-root 的 virtio 驱动会被拦截转发到 root linux 的 virtio 后端）
