@@ -1,30 +1,89 @@
-# 如何启动NonRoot Linux
+# 如何启动 NonRoot Linux（Zone1 Linux）
 
-hvisor对NonRoot的启动做了妥善处理，使得启动较为简单，方式如下：
+使用 hvisor-tool 启动 NonRoot Linux。
 
-1. 准备好用于 NonRoot Linux 的内核镜像，设备树，以及文件系统。将内核和设备树放置在 Root Linux 的文件系统中。
+```bash
+# Linux 源代码路径
+LINUX_PATH="<路径>/linux"
 
-2. 在给 NonRoot Linux 的设备树文件中指定好此 NonRoot Linux所使用的串口和需要挂载的文件系统，示例如下：
-
-```
-	chosen {
-		bootargs = "clk_ignore_unused console=ttymxc3,115200 earlycon=ec_imx6q3,0x30a60000,115200 root=/dev/mmcblk3p2 rootwait rw";
-		stdout-path = "/soc@0/bus@30800000/serial@30a60000";
-	};
+git clone https://github.com/syswonder/hvisor-tool.git
+cd hvisor-tool
+make all ARCH=arm64 LOG=LOG_WARN KDIR="${LINUX_PATH}"
 ```
 
-3. 编译用于 Hvisor 的[内核模块和命令行工具](https://github.com/syswonder/hvisor-tool?tab=readme-ov-file)，将其放置在 Root Linux 的文件系统中。
+> 请务必保证 hvisor 中的 root linux 镜像也是由编译 hvisor-tool 时参数选项中的 Linux 源代码目录编译产生。
 
-4. 启动 Hvisor 的 Root Linux，注入刚才编译好的内核模块：
+> 请务必保证 hvisor-tool 编译时采用的 linux header 版本与 root linux 的 linux header 版本一致，否则 hvisor-tool 的 driver 可能会无法加载。 可以通过使用 root linux 相同的交叉编译工具链进行编译。
 
+编译完成后，需要将 hvisor-tool 的可执行文件 `tools/hvisor` 和内核模块 `driver/hvisor.ko` 复制到 root linux 的根文件系统中启动 zone1 linux 的目录，例如 `/root`，再同时将 zone1 的根文件系统、内核镜像、以及编译后的设备树放在同一目录。
+
+还需要将 hvisor-tool 的配置文件放入文件系统中，文件名需要保持一致，配置文件位于`platform/<架构>/<平台名>/configs/`目录下。
+
+以架构为`aarch64`、平台名为`qemu-gicv3`为例，则配置文件为`platform/aarch64/qemu-gicv3/configs/zone1-linux-virtio.json` 和 `platform/aarch64/qemu-gicv3/configs/zone1-linux.json`。
+
+下面命令以`aarch64`架构为例，若为其他架构请更改命令对应的部分。
+
+```bash
+# 回到创建的 root linux 根文件系统时的目录
+LINUX_PATH="<路径>/linux"
+HVISOR_PATH="<路径>/hvisor"
+HVISOR_TOOL_PATH="<路径>/hvisor-tool"
+
+# 挂载
+sudo mount -t ext4 rootfs1.img rootfs/
+
+# 复制 hvisor-tool 的 driver/hvisor.ko 和 tools/hvisor
+sudo cp "${HVISOR_TOOL_PATH}/driver/hvisor.ko" rootfs/root/
+sudo cp "${HVISOR_TOOL_PATH}/tools/hvisor" rootfs/root/
+
+# 复制`platform/<架构>/<平台名>/configs/`目录下的 hvisor-tool 的配置文件到 root 路径下
+sudo cp "${HVISOR_PATH}/platform/aarch64/qemu-gicv3/configs/zone1-linux-virtio.json" \
+    rootfs/root/zone1-linux-virtio.json
+sudo cp "${HVISOR_PATH}/platform/aarch64/qemu-gicv3/configs/zone1-linux.json" \
+    rootfs/root/zone1-linux.json
+
+# 复制 zone1 linux 的根文件系统、内核镜像、以及编译后的设备树
+sudo cp rootfs2.img \
+    rootfs/root/rootfs2.ext4
+sudo cp "${LINUX_PATH}/arch/arm64/boot/Image" \
+    rootfs/root/Image
+sudo cp "${HVISOR_PATH}/platform/aarch64/qemu-gicv3/image/dts/zone1-linux.dtb" \
+    rootfs/root/zone1-linux.dtb
+
+# 卸载
+sudo umount rootfs
 ```
+
+之后在 QEMU 上即可通过 root linux 启动 zone1-linux。具体命令如下。
+
+在 hvisor 目录下执行
+```bash
+make ARCH=<架构> LOG=<日志等级> BOARD=<平台名> run
+```
+
+例如
+```bash
+make ARCH=aarch64 LOG=info BOARD=qemu-gicv3 run
+```
+接下来启动 root linux
+```bash
+bootm 0x40400000 - 0x40000000
+
+cd root
 insmod hvisor.ko
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mkdir -p /dev/pts
+mount -t devpts devpts /dev/pts
+
+rm nohup.out
+
+# 启动 zone1-linux 的 virtio
+nohup ./hvisor virtio start zone1-linux-virtio.json &
+# 启动 zone1-linux
+./hvisor zone start zone1-linux.json && \
+cat nohup.out | grep "char device" && \
+script /dev/null
 ```
 
-5. 使用命令行工具，这里假定其名字为```hvisor```，启动 NonRoot Linux。
-
-```
-./hvisor zone start --kernel 内核镜像,addr=0x70000000 --dtb 设备树文件,addr=0x91000000 --id 虚拟机编号（从1开始指定）
-```
-
-6. NonRoot Linux 启动完毕，打开刚才指定的串口即可使用。
+如果显示 virtio 出现 WARNING 或者 ERROR，可以查看 nohup.out 查看详细信息，或者使用 dmesg 命令查看内核日志。
