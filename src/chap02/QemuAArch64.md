@@ -234,9 +234,7 @@ cp "${KERNEL_PATH}" platform/aarch64/qemu-gicv3/image/kernel/Image
 
 ```bash
 # 编译设备树
-cd platform/aarch64/qemu-gicv3/image/dts/
-make all
-cd -    # 回到 hvisor 目录
+make BID=aarch64/qemu-gicv3 dtb
 ```
 
 > 其实建议采用硬链接的方式，以便减轻磁盘空间的占用和方便根文件系统修改时同步。
@@ -244,7 +242,7 @@ cd -    # 回到 hvisor 目录
 之后在 hvisor 目录下，执行相应命令即可启动 hvisor。
 
 ```bash
-make ARCH=aarch64 LOG=info BOARD=qemu-gicv3 run
+make BID=aarch64/qemu-gicv3 LOG=info run
 ```
 
 执行后会进入 uboot 启动界面，该界面下执行：
@@ -328,7 +326,7 @@ sudo umount rootfs
 
 ```bash
 # 启动 QEMU
-make ARCH=aarch64 LOG=info BOARD=qemu-gicv3 run
+make BID=aarch64/qemu-gicv3 LOG=info run
 ```
 
 ```
