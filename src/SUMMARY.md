@@ -36,6 +36,8 @@
 
 - [RK3588 hvisor 快速上手](./chap02/RK3588.md)
 
+- [Phytium-pi hvisor 快速上手](./chap02/Phytium-pi.md)
+
 - [FPGA 香山昆明湖快速上手]()
 
 
