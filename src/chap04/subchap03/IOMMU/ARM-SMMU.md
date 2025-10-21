@@ -47,7 +47,7 @@ addr可以指定该设备的bdf号。
 
 **在Qemu模拟的PCI总线中，除了PCI HOST，还有一个默认的网卡设备，所以其余添加的设备的addr参数必须从2.0开始。**
 
-```
+```makefile
 // scripts/qemu-aarch64.mk
 
 QEMU_ARGS := -machine virt,secure=on,gic-version=3,virtualization=on,iommu=smmuv3
@@ -60,7 +60,7 @@ QEMU_ARGS += -device virtio-blk-pci,drive=Xa003e000,disable-legacy=on,disable-mo
 
 查阅Qemu的源码可知VIRT_SMMU对应的内存区域起始地址为0x09050000，大小为0x20000，我们需要访问这个区域，所以在hvisor的页表中必须进行映射。
 
-```
+```rust
 // src/arch/aarch64/mm.rs
 
 pub fn init_hv_page_table(fdt: &fdt::Fdt) -> HvResult {
@@ -79,7 +79,7 @@ pub fn init_hv_page_table(fdt: &fdt::Fdt) -> HvResult {
 
 其中的rp是所定义的 `RegisterPage` 的引用，`RegisterPage` 根据SMMUv3手册中第六章的偏移量进行设置，读者可自行查阅。
 
-```
+```rust
 // src/arch/aarch64/iommu.rs
 
 pub struct Smmuv3{
@@ -101,7 +101,7 @@ pub struct Smmuv3{
 
 在完成映射工作后，我们便可以引用对应的这段寄存器区域。
 
-```
+```rust
 impl Smmuv3{
     fn new() -> Self{
         let rp = unsafe {
@@ -129,7 +129,7 @@ impl Smmuv3{
 
 以其中检查环境支持哪种表格式为例，支持的表的类型在 `IDR0` 寄存器中，通过 `self.rp.IDR0.get() as usize` 获取 `IDR0` 的数值，通过 `extract_bit` 进行截取，获取 `ST_LEVEL` 字段的值，根据手册可知，0b00代表支持线性表，0b01代表支持线性表和二级表，0b1x为保留位，我们可以根据该信息选择创建什么类型的流表。
 
-```
+```rust
 impl Smmuv3{
     fn check_env(&mut self){
         let idr0 = self.rp.IDR0.get() as usize;
@@ -161,7 +161,7 @@ impl Smmuv3{
 
 申请了空间后，我们可以将这个表的基地址填入 `STRTAB_BASE` 这个寄存器：
 
-```
+```rust
 	let mut base = extract_bits(self.strtab_base, STRTAB_BASE_OFF, STRTAB_BASE_LEN);
 	base = base << STRTAB_BASE_OFF;
 	base |= STRTAB_BASE_RA;
@@ -170,7 +170,7 @@ impl Smmuv3{
 
 接着我们还要设置 `STRTAB_BASE_CFG` 寄存器，来表明我们使用的表的格式是线性表或者二级表，以及表项的个数（使用以LOG2的形式表示，即SID的最大位数）：
 
-```
+```rust
         // format : linear table
         cfg |= STRTAB_BASE_CFG_FMT_LINEAR << STRTAB_BASE_CFG_FMT_OFF;
 
@@ -189,7 +189,7 @@ impl Smmuv3{
 
 对于每个sid，根据表基址找到表项的地址，即合法位为0，地址翻译设置为 `BYPASS`。
 
-```
+```rust
 	let base = self.strtab_base + sid * STRTAB_STE_SIZE;
 	let tab = unsafe{&mut *(base as *mut [u64;STRTAB_STE_DWORDS])};
 
@@ -202,7 +202,7 @@ impl Smmuv3{
 
 上面我们做了一些准备工作，但还需要一些额外的配置，比如使能SMMU，否则会导致SMMU处于disabled状态。
 
-```
+```rust
 	let cr0 = CR0_SMMUEN;
 	self.rp.CR0.set(cr0 as _);
 ```
@@ -213,14 +213,14 @@ impl Smmuv3{
 
 首先我们同样要根据sid找到对应的表项地址。
 
-```
+```rust
 	let base = self.strtab_base + sid * STRTAB_STE_SIZE;
         let tab = unsafe{&mut *(base as *mut [u64;STRTAB_STE_DWORDS])};
 ```
 
 第二步我们要指明，这个设备的相关信息，我们是要用来进行第二阶段地址翻译的，且这个表项是合法的了。
 
-```
+```rust
         let mut val0:usize = 0;
         val0 |= STRTAB_STE_0_V;
         val0 |= STRTAB_STE_0_CFG_S2_TRANS << STRTAB_STE_0_CFG_OFF;
@@ -228,7 +228,7 @@ impl Smmuv3{
 
 第三步我们要说明当前这个设备分配给哪个虚拟机来用，并且开启第二阶段页表遍历，`S2AA64` 代表第二阶段翻译表是基于aarch64的，`S2R` 代表启用错误记录。
 
-```
+```rust
         let mut val2:usize = 0;
         val2 |= vmid << STRTAB_STE_2_S2VMID_OFF;
         val2 |= STRTAB_STE_2_S2PTW;
@@ -240,7 +240,7 @@ impl Smmuv3{
 
 这里我们也需要说明这个页表的配置信息，这样SMMU才知道这个页表的格式等信息，才能使用这个页表，即 `VTCR` 这个字段。
 
-```
+```rust
 	let vtcr = 20 + (2<<6) + (1<<8) + (1<<10) + (3<<12) + (0<<14) + (4<<16);
         let v = extract_bits(vtcr as _, 0, STRTAB_STE_2_VTCR_LEN);
         val2 |= v << STRTAB_STE_2_VTCR_OFF;
@@ -252,7 +252,7 @@ impl Smmuv3{
 
 在 `src/main.rs` 中，进行了hvisor的页表初始化以后（映射了SMMU相关区域），可以进行SMMU的初始化。
 
-```
+```rust
 fn primary_init_early(dtb: usize) {
     ...
 
@@ -269,7 +269,7 @@ fn primary_init_early(dtb: usize) {
 
 接着需要分配设备，这一步我们在创建虚拟机的时候同步完成，目前我们只将设备分配给zone0使用。
 
-```
+```rust
 // src/zone.rs
 
 pub fn zone_create(
@@ -293,7 +293,26 @@ pub fn zone_create(
 
 在qemu启动参数中开启 `-trace smmuv3_*` ，即可看到相关输出：
 
-```
+```bash
 smmuv3_config_cache_hit Config cache HIT for sid=0x10 (hits=1469, misses=1, hit rate=99)
 smmuv3_translate_success smmuv3-iommu-memory-region-16-2 sid=0x10 iova=0x8e043242 translated=0x8e043242 perm=0x3
+```
+
+### 注意事项
+
+在QEMU模拟的aarch64机器中，默认存在 `virtio-net-pci` 设备，但你必须手动添加参数，使其经过IOMMU，就像下面这样：
+
+```makefile
+QEMU_ARGS += -netdev type=user,id=net1
+QEMU_ARGS += -device virtio-net-pci,netdev=net1,disable-legacy=on,disable-modern=off,iommu_platform=on
+```
+
+当然你也可以在GPA和HPA非恒等映射的情况下，测试IOMMU是否能够正常工作。但你需要把root根文件系统挂载的 `virtio-blk-device` 换为 `virtio-blk-pci`，因为普通的MMIO设备在QEMU中不经过IOMMU，这会导致DMA失败，进而导致root虚拟机无法启动。
+
+一个参考的设置方式如下：
+
+```makefile
+QEMU_ARGS += -drive if=none,file=$(FSIMG1),id=Xa003e000,format=raw
+# QEMU_ARGS += -device virtio-blk-device,drive=Xa003e000,bus=virtio-mmio-bus.31
+QEMU_ARGS +=-device virtio-blk-pci,drive=Xa003e000,disable-legacy=on,disable-modern=off,iommu_platform=on
 ```
