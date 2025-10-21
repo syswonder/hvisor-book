@@ -1,6 +1,6 @@
 # hvisor 支持的硬件平台
 
-2025.3.18
+2025.8.21
 
 ## aarch64
 
@@ -21,3 +21,8 @@
 
 - [x] Loongson 3A5000+7A2000
 - [ ] Loongson 3A6000
+
+## x86_64
+
+- [x] QEMU q35
+- [x] ASUS NUC 14 Essential
