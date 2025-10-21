@@ -47,9 +47,9 @@
 
 - [如何编译](./chap03/Compile.md)
 
-- [启动管理 Linux VM](./chap03/BootRootLinux.md)
+- [启动 Root Linux](./chap03/BootRootLinux.md)
 
-- [启动两个VM：Linux1 和 Linux2](./chap03/BootNonRootLinux.md)
+- [启动 NonRoot Linux](./chap03/BootNonRootLinux.md)
 
 - [启动两个VM：Linux 和 RTOS](./chap03/BootNonRootRTOS.md)
 
