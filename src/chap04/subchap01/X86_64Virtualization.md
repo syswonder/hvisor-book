@@ -24,7 +24,7 @@ VT-x 针对这种因资源复用引发的上下文切换，提供了底层硬件
 Hvisor 使用 `PerCpu` 结构体封装 pCPU 的虚拟化功能，该结构体内部包含一个名为 `arch_cpu` 的字段，类型为 `ArchCpu`，由各体系架构自行实现。x86 架构下的 `ArchCpu` 主要包含以下字段：
 
 - `guest_regs`：用于在 VM exit 时保存 zone 的通用寄存器状态，并在 VM entry 时进行恢复。由于通用寄存器不包含在 VMCS 的 guest-state 区域中，因此需要由软件负责保存与恢复。
-- `vmcs_region`：当前 vCPU 使用的 VMCS 区域。。
+- `vmcs_region`：当前 vCPU 使用的 VMCS 区域。
 
 Hvisor 在完成 `rust_main()` 中的初始化步骤后，会进入 `PerCpu` 提供的 `run_vm()` 方法，并最终由 `ArchCpu` 接管虚拟化的相关流程。在 x86 架构下的 `ArchCpu` 实现中，Hvisor 会首先检测当前 pCPU 是否支持 VT-x。如果支持，执行 `vmxon` 指令使能 VMX。随后，调用 `setup_vmcs()` 方法，将 `vmcs_region` 绑定至当前的 pCPU，并完成必要的 VMCS 配置。
 

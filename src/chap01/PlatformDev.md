@@ -56,8 +56,8 @@ wheatfox (wheatfox17@icloud.com) 2025.3.17
 | `loongarch64/ls3a6000` | `loongson_chip_7a2000` `loongson_uart` `loongson_cpu_3a6000` |
 | `aarch64/rk3588`       | `gicv3` `uart_16550` `uart_addr_rk3588` `pt_layout_rk`       |
 | `aarch64/rk3568`       | `gicv3` `uart_16550` `uart_addr_rk3568` `pt_layout_rk`       |
-| `x86_64/qemu         ` | `pci`                                                        |
-| `x86_64/nuc14mnk     ` | `pci`                                                        |
+| `x86_64/qemu         ` | `pci` `uart16550a`                                           |
+| `x86_64/nuc14mnk     ` | `pci` `uart16550a`                                           |
 
 ## 开发与编译指南
 

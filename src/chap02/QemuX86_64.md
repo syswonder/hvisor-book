@@ -23,7 +23,7 @@ sudo apt install gcc
 
 ## 三、安装 QEMU
 
-推荐自行编译 QEMU，便于日后修改 QEMU 源码进行调试。此处以 QEMU v9.0.92 为例，也可以安装更新的版本。
+推荐自行编译 QEMU，便于日后修改 QEMU 源码进行调试。此处以 QEMU v9.2.3 为例，也可以安装更新的版本。
 
 ```bash
 # 安装依赖
@@ -31,13 +31,13 @@ sudo apt install git libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev \
 ninja-build python3-venv bzip2 make
 
 # 获取 QEMU 源码
-wget https://download.qemu.org/qemu-9.1.0-rc2.tar.xz
+wget https://download.qemu.org/qemu-9.2.3.tar.xz
 
 # 解压
-tar xvJf qemu-9.1.0-rc2.tar.xz
+tar xvJf qemu-9.2.3.tar.xz
 
 # 进入源码目录
-cd qemu-9.1.0-rc2/
+cd qemu-9.2.3/
 
 # 生成配置并编译
 ./configure --enable-kvm --enable-slirp --target-list=x86_64-softmmu
@@ -49,10 +49,10 @@ make -j$(nproc)
 编辑 `~/.bashrc` 文件，在末尾加入：
 
 ```bash
-export PATH="/path/to/qemu-9.1.0-rc2/build:$PATH"
+export PATH="/path/to/qemu-9.2.3/build:$PATH"
 ```
 
-随后在终端执行 `source ~/.bashrc` 更新环境变量，或者重启一个新终端。使用 `qemu-system-x86_64 --version` 确认当前 QEMU 版本，若为 9.0.92 则安装成功。
+随后在终端执行 `source ~/.bashrc` 更新环境变量，或者重启一个新终端。使用 `qemu-system-x86_64 --version` 确认当前 QEMU 版本，若为 9.2.3 则安装成功。
 
 ## 四、编译 Linux Kernel
 
