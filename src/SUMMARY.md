@@ -10,7 +10,7 @@
 
 - [hvisor 支持的硬件平台](./chap01/Board.md)
 
-- [hvisor 硬件适配开发手册 🧑🏻‍💻](./chap01/PlatformDev.md)
+- [hvisor 硬件适配](./chap01/PlatformDev.md)
 
 # hvisor 快速上手指南
 
@@ -18,11 +18,13 @@
 
 - [Qemu RISC-V 快速上手](./chap02/QemuRISC-V.md)
 
-- [NXP i.MX 8 快速上手](./chap02/NXPIMX8.md)
-
-- [FPGA-Rockechip 快速上手](./chap02/FPGA-Rockechip.md)
+- [Qemu X86_64 快速上手](./chap02/QemuX86_64.md)
 
 - [龙芯 3A5000 hvisor 快速上手](./chap02/Loongson-3A5000.md)
+
+- [NUC14MNK X86_64 快速上手](./chap02/NUC14MNK.md)
+
+- [NXP i.MX 8 快速上手](./chap02/NXPIMX8.md)
 
 - [Xilinx ZCU102 hvisor 快速上手](./chap02/subchap01/Xilinx-ZCU102.md)
 
@@ -38,11 +40,9 @@
 
 - [Phytium-pi hvisor 快速上手](./chap02/Phytium-pi.md)
 
-- [FPGA 香山昆明湖快速上手]()
+- [FPGA-Rockechip 快速上手](./chap02/FPGA-Rockechip.md)
 
-- [Qemu X86_64 快速上手](./chap02/QemuX86_64.md)
-
-- [NUC14MNK X86_64 快速上手](./chap02/NUC14MNK.md)
+- [FPGA 香山昆明湖快速上手](./chap02/FPGA-XiangShan.md)
 
 
 # hvisor 使用手册
@@ -64,7 +64,9 @@
 # hvisor架构与实现
 
 - [hvisor 架构](./chap04/Structure.md)
+
 - [hvisor 启动与运行](./chap04/BootAndRun.md)
+
 - [CPU 虚拟化](./chap04/subchap01/CPUVirtualization.md)
 
     - [PerCPU 定义](./chap04/subchap01/PerCPU.md)
@@ -76,7 +78,9 @@
     - [LoongArch 处理器虚拟化](./chap04/subchap01/LoongArchVirtualization.md)
 
     - [X86_64 处理器虚拟化](./chap04/subchap01/X86_64Virtualization.md)
+
 - [内存虚拟化](./chap04/MemVirtualization.md)
+
 - [中断虚拟化](./chap04/subchap02/InterruptVirtualization.md)
 
     - [ARM 中断控制 GIC](./chap04/subchap02/ARM-GIC.md)
@@ -88,6 +92,7 @@
     - [LoongArch 中断控制](./chap04/subchap02/LoongArch-Controller.md)
     
     - [X86_64 中断控制 APIC](./chap04/subchap02/X86_64-APIC.md)
+
 - [I/O 虚拟化](./chap04/subchap03/IO-Virtualization.md)
 
     - [IOMMU](./chap04/subchap03/IOMMU/IOMMU-Define.md)
@@ -97,18 +102,25 @@
         - [RISC-V IOMMU 标准的实现](./chap04/subchap03/IOMMU/RISC-IOMMU.md)
         
         - [X86_64 IOMMU 实现](./chap04/subchap03/IOMMU/X86_64-VTD.md)
+
 - [VirtIO](./chap04/subchap03/VirtIO/VirtIO-Define.md)
-  
     - [Block](./chap04/subchap03/VirtIO/BlockDevice.md)
     - [Net](./chap04/subchap03/VirtIO/NetDevice.md)
     - [Console](./chap04/subchap03/VirtIO/ConsoleDevice.md)
     - [GPU](./chap04/subchap03/VirtIO/GPUDevice.md)
+
 - [PCI 虚拟化](./chap04/subchap03/PCI-Virtualization.md)
+
 - [Hvisor 管理工具](./chap04/subchap04/ManageTools.md)
   
     - [Hypercall](./chap04/subchap04/HyperCall.md)
 
 # hvisor 的规划
 
-- [TODO]()
+- [TODO](./chap05/Planning.md)
 
+# 附录
+
+- [贡献者列表](./appendix/contrib.md)
+
+- [关于](./appendix/about.md)

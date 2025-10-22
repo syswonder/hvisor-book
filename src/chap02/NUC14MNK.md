@@ -1,7 +1,5 @@
 # 在 NUC 14 Essential x86_64 上运行 Hvisor
 
-刘天弘（lzoi_lth@163.com）
-
 ## 一、BIOS 设置
 
 NUC14 初始自带一个 BIOS，需要进行相应设置。

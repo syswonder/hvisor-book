@@ -1,6 +1,7 @@
 # Qemu ZCU102 hvisor 启动
-任航麒(2572131118@qq.com)
+
 ## 安装 Petalinux
+
 1. 安装 [Petalinux 2024.1](https://china.xilinx.com/support/download/index.html/content/xilinx/zh/downloadNav/embedded-design-tools/2024-1.html)
     请注意，本文以 2024.1 为例进行介绍，并不意味着其他版本不可以，只是其他版本未经验证，且测试中发现 Petalinux 对于操作系统有较强的依赖，请安装适合于自己操作系统的对应版本的 Petalinux.
 2. 将下载好的 ```petalinux.run``` 文件放置到想要安装到的目录下，为其添加执行权限，之后直接 ```./petalinux.run``` 运行安装程序。
