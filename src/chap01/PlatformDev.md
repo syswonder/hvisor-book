@@ -1,6 +1,5 @@
-# hvisor 硬件适配开发手册 🧑🏻‍💻
+# hvisor 硬件适配 
 
-wheatfox (wheatfox17@icloud.com) 2025.3.17
 
 ## 设计原则
 
@@ -88,3 +87,4 @@ make BID=xxx/new_board
   - `irqchip` (`gicv3`, `plic`, ...)
   - `uart` (`pl011`, `imx_uart`, ...)
   - `iommu`, `pci`, `pt_layout_xxx`, ...
+

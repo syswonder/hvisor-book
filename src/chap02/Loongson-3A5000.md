@@ -1,8 +1,5 @@
 # 在龙芯 3A5000主板（7A2000）上启动 hvisor
 
-wheatfox <wheatfox17@icloud.com>
-
-更新时间：2025.6.9
 
 ## 第一步：获取 hvisor 源码并进行编译
 

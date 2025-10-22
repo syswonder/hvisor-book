@@ -1,6 +1,5 @@
 # FPGA zcu102
 
-Author: 杨竣轶(Jerry) github.com/comet959
 
 ```shell
 # Before, Install vivado 2022.2 software
@@ -43,8 +42,9 @@ cd uintr-rocket-chip
 vim path/to/repo/common/src/main/scala/Configs.scala
 ```
 
+change
+
 ```scala
-// change
 class UintrConfig extends Config(
   new WithNBigCores(4) ++
     new WithNExtTopInterrupts(6) ++
@@ -59,9 +59,11 @@ class UintrConfig extends Config(
     new WithCoherentBusTopology ++
     new BaseSubsystemConfig
 )
+```
 
-// to
+to
 
+```scala
 class UintrConfig extends Config(
   new WithHypervisor ++
   new WithNBigCores(4) ++

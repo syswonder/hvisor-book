@@ -1,4 +1,4 @@
-### 4.6.1.2 RISC-V IOMMU 标准的实现
+### RISC-V IOMMU 标准的实现
 
 #### RISC-V IOMMU 工作流程
 

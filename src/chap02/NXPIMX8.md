@@ -1,13 +1,10 @@
 # 在NXP-IMX8MP上启动hvisor
-时间：2024/2/25
 
-更新时间：2025/3/7
-
-作者：杨竣轶，陈星宇，李国玮，陈林锟
 
 ## 1. 下载厂商提供的linux源码
 
-https://pan.baidu.com/s/1XimrhPBQIG5edY4tPN9_pw?pwd=kdtk
+[https://pan.baidu.com/s/1XimrhPBQIG5edY4tPN9_pw?pwd=kdtk](https://pan.baidu.com/s/1XimrhPBQIG5edY4tPN9_pw?pwd=kdtk)
+
 提取码：kdtk
 
 进入`Linux/源码/`目录下，下载`OK8MP-linux-sdk.tar.bz2.0*`3个压缩包，下载完成后，执行：
@@ -258,4 +255,5 @@ setenv serverip 192.169.137.2; setenv ipaddr 192.169.137.3; setenv loadaddr 0x40
 
 ### 对于windows系统
 
-可以参考这篇文章：https://blog.csdn.net/qq_52192220/article/details/142693036
+可以参考这篇文章：
+[https://blog.csdn.net/qq_52192220/article/details/142693036](https://blog.csdn.net/qq_52192220/article/details/142693036)

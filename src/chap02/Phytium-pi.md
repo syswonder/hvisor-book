@@ -1,7 +1,3 @@
-石全(749990226@qq.com)
-
-更新时间：2025.10.11
-
 # 飞腾派SDK的获取
 
 进入[ieasy cloud官网](https://www.iceasy.com/cloud/)，登录后选择飞腾派下载专区，依次选择`5-系统镜像->飞腾派V3版本ubuntu镜像 250422（最新）`进行下载。内核源码位于`4-系统源码`中。
@@ -15,6 +11,7 @@ Ubuntu上Linux的最小镜像Image文件可通过[链接](https://pan.quark.cn/s
 
 
 # 编译 Hvisor 和设备树
+
 1. 和其他开发板类似，拉取 hvisor 最新代码，仓库地址：https://github.com/syswonder/hvisor。进入目录后编译 hvisor：
     ```
     make BID=aarch64/phytium-pi LOG=info
