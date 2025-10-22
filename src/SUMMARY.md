@@ -18,9 +18,13 @@
 
 - [Qemu RISC-V 快速上手](./chap02/QemuRISC-V.md)
 
-- [NXP i.MX 8 快速上手](./chap02/NXPIMX8.md)
+- [Qemu X86_64 快速上手](./chap02/QemuX86_64.md)
 
 - [龙芯 3A5000 hvisor 快速上手](./chap02/Loongson-3A5000.md)
+
+- [NUC14MNK X86_64 快速上手](./chap02/NUC14MNK.md)
+
+- [NXP i.MX 8 快速上手](./chap02/NXPIMX8.md)
 
 - [Xilinx ZCU102 hvisor 快速上手](./chap02/subchap01/Xilinx-ZCU102.md)
 
@@ -39,10 +43,6 @@
 - [FPGA-Rockechip 快速上手](./chap02/FPGA-Rockechip.md)
 
 - [FPGA 香山昆明湖快速上手](./chap02/FPGA-XiangShan.md)
-
-- [Qemu X86_64 快速上手](./chap02/QemuX86_64.md)
-
-- [NUC14MNK X86_64 快速上手](./chap02/NUC14MNK.md)
 
 
 # hvisor 使用手册
