@@ -19,11 +19,12 @@
 - [x] FPGA 香山（昆明湖）on S2C Prodigy S7-19PS-2
 - [x] FPGA  RocketChip on Xilinx Ultrascale+ MPSoC ZCU102
 
-## x86
-- [x] QEMU virt x86_64
-- [x] 华硕 NUC 14 Elite 主机
-
 ## loongarch64
 
 - [x] Loongson 3A5000+7A2000
 - [ ] Loongson 3A6000
+
+## x86_64
+
+- [x] QEMU q35
+- [x] ASUS NUC 14 Essential

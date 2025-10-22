@@ -23,9 +23,10 @@ wheatfox (wheatfox17@icloud.com) 2025.3.17
      - `bootloader/` - (可选) 用于 QEMU 本地运行和 unittest/systemtest 测试
      - `dts/` - (可选) zone 0, 1, 2, … 的设备树源文件
      - `its/` - (可选) 用于 U-Boot FIT image 生成（hvisor aarch64 zcu102）
-     - `acpi/` - (可选) x86 平台的 ACPI 设备树源码（hvisor x86_64）
+     - `iso/` - (可选) 用于 GRUB image 生成（hvisor x86_64）
      - `kernel/` - (可选) 适用于目标平台的 kernel Image
      - `virtdisk/` - (可选) 虚拟磁盘文件，如 rootfs 等
+     - `font/` - (可选) 在显示器上打印调试日志信息使用的字体
 
 ## 代码实现细节
 
@@ -55,7 +56,8 @@ wheatfox (wheatfox17@icloud.com) 2025.3.17
 | `loongarch64/ls3a6000` | `loongson_chip_7a2000` `loongson_uart` `loongson_cpu_3a6000` |
 | `aarch64/rk3588`       | `gicv3` `uart_16550` `uart_addr_rk3588` `pt_layout_rk`       |
 | `aarch64/rk3568`       | `gicv3` `uart_16550` `uart_addr_rk3568` `pt_layout_rk`       |
-| `x86_64/qemu         ` |                                                              |
+| `x86_64/qemu         ` | `pci` `uart16550a`                                           |
+| `x86_64/nuc14mnk     ` | `pci` `uart16550a`                                           |
 
 ## 开发与编译指南
 
