@@ -40,6 +40,10 @@
 
 - [FPGA 香山昆明湖快速上手](./chap02/FPGA-XiangShan.md)
 
+- [Qemu X86_64 快速上手](./chap02/QemuX86_64.md)
+
+- [NUC14MNK X86_64 快速上手](./chap02/NUC14MNK.md)
+
 
 # hvisor 使用手册
 
@@ -73,6 +77,8 @@
     
     - [LoongArch 处理器虚拟化](./chap04/subchap01/LoongArchVirtualization.md)
 
+    - [X86_64 处理器虚拟化](./chap04/subchap01/X86_64Virtualization.md)
+
 - [内存虚拟化](./chap04/MemVirtualization.md)
 
 - [中断虚拟化](./chap04/subchap02/InterruptVirtualization.md)
@@ -84,6 +90,8 @@
     - [RISC-V 中断控制 AIA](./chap04/subchap02/RISC-AIA.md)
 
     - [LoongArch 中断控制](./chap04/subchap02/LoongArch-Controller.md)
+    
+    - [X86_64 中断控制 APIC](./chap04/subchap02/X86_64-APIC.md)
 
 - [I/O 虚拟化](./chap04/subchap03/IO-Virtualization.md)
 
@@ -92,6 +100,8 @@
         - [ARM SMMU 的实现](./chap04/subchap03/IOMMU/ARM-SMMU.md)
 
         - [RISC-V IOMMU 标准的实现](./chap04/subchap03/IOMMU/RISC-IOMMU.md)
+        
+        - [X86_64 IOMMU 实现](./chap04/subchap03/IOMMU/X86_64-VTD.md)
 
 - [VirtIO](./chap04/subchap03/VirtIO/VirtIO-Define.md)
     - [Block](./chap04/subchap03/VirtIO/BlockDevice.md)
