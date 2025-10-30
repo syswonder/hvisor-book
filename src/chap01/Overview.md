@@ -64,5 +64,5 @@ Hvisor 作为 Little.BIG 理念的实现，其整体架构分为三层：
 	异构 SoC 硬件，包括 CPU、DRAM、GPU、FPGA、网卡及 I/O 设备。
 
 <div align=center>
-	<img src="img/hvisor-architecture.png"/>
+	<img src="img/hvisor-architecture.svg"/>
 </div>
