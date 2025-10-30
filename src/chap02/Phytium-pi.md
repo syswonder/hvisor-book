@@ -58,7 +58,7 @@ tftp ${fdt_addr} ${serverip}:phytium-pi-board-v2.dtb; tftp ${zone0_kernel_addr} 
 
 拉取 Hvisor-tool 的最新代码：https://github.com/syswonder/hvisor-tool/tree/main，进行编译：
 ```shell
-make all ARCH=arm64 LOG=LOG_WARN KDIR=Phytium内核源码 VIRTIO_GPU=n ROOT=/path/to/target_rootfs
+make all ARCH=arm64 LOG=LOG_INFO KDIR=Phytium内核源码 VIRTIO_GPU=n ROOT=/path/to/target_rootfs
 ```
 其中ROOT为Phytium根文件系统的路径，可以把之前下载的镜像mount到目录上。
 更多细节请参考 hvisor-tool 的 Readme.md。编译结果位于`output/hvisor`和`output/hvisor.ko`。亦可在[网盘链接](https://pan.quark.cn/s/78ad8912edff?pwd=TBQd)里找到已经编译好的文件。

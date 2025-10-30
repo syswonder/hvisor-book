@@ -154,7 +154,7 @@ screen /dev/pts/xxx
 
 例如，若要编译面向 riscv 架构的命令行工具，且 Hvisor 环境中的 Linux 镜像编译来源的源码位于 `~/linux`，则可执行：
 ```bash
-make all ARCH=riscv LOG=LOG_WARN KDIR=~/linux
+make all ARCH=riscv LOG=LOG_INFO KDIR=~/linux
 ```
 
 请务必保证 Hvisor 中的 Root Linux 镜像是由编译 hvisor-tool 时参数选项中的 Linux 源码目录编译产生。
