@@ -269,7 +269,7 @@ LINUX_PATH="<路径>/linux"
 
 git clone https://github.com/syswonder/hvisor-tool.git
 cd hvisor-tool
-make all ARCH=arm64 LOG=LOG_WARN KDIR="${LINUX_PATH}"
+make all ARCH=arm64 LOG=LOG_INFO KDIR="${LINUX_PATH}"
 ```
 
 > 请务必保证 hvisor 中的 root linux 镜像是由编译 hvisor-tool 时参数选项中的 Linux 源代码目录编译产生。

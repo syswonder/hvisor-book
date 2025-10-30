@@ -211,7 +211,7 @@ git clone https://github.com/syswonder/hvisor-tool.git
 cd hvisor-tool
 
 # KDIR 必须设为第四步编译的 Linux kernel 根目录 
-make all ARCH=x86_64 LOG=LOG_WARN KDIR=linux根目录
+make all ARCH=x86_64 LOG=LOG_INFO KDIR=linux根目录
 ```
 
 编译完成后，需要将 hvisor-tool 的可执行文件 `tools/hvisor` 和内核模块 `driver/hvisor.ko` 复制到 zone0 的根文件系统中的指定位置，例如 `/`，将 zone1 的根文件系统、内核镜像以及配置文件放在同一目录。具体的文件名需要与 hvisor-tool 配置文件（来自 hvisor-tool 的 `examples/qemu-x86_64/virtio_cfg.json` 和 `examples/qemu-x86_64/zone1_linux.json`）的内容保持一致。
