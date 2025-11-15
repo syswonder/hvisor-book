@@ -38,6 +38,8 @@
 
 - [RK3588 hvisor 快速上手](./chap02/RK3588.md)
 
+- [XiUOS RK3588 hvisor 快速上手](./chap02/XiUOS-RK3588.md)
+
 - [Phytium-pi hvisor 快速上手](./chap02/Phytium-pi.md)
 
 - [FPGA-Rockechip 快速上手](./chap02/FPGA-Rockechip.md)
