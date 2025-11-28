@@ -38,7 +38,7 @@
 
 - [RK3588 hvisor 快速上手](./chap02/RK3588.md)
 
-- [XiUOS RK3588 hvisor 快速上手](./chap02/XiUOS-RK3588.md)
+- [基于 RK3588 的 矽慧通 X3300 快速上手](./chap02/SYSOUL-X3300.md)
 
 - [Phytium-pi hvisor 快速上手](./chap02/Phytium-pi.md)
 
