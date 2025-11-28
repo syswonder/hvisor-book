@@ -1,14 +1,14 @@
-# 在 XiUOS RK3588 上启动 hvisor
+# 基于 RK3588 的 矽慧通 X3300 快速上手
 
-本文档旨在为开发者详细介绍在 XiUOS RK3588 开发板上部署并启动 hvisor 的完整流程。
+本文档旨在为开发者详细介绍在 矽慧通 X3300 开发板上部署并启动 hvisor 的完整流程。
 
-操作环境基于 Ubuntu 22.04 主机。我们假定已获取好 Rockchip Linux SDK 及 XiUOS RK3588 相应的配置文档 / 配置文件。文中所述的开发板特指基于 `rockchip,rk3588-evb7-v11` 定制的 XiUOS RK3588。
+操作环境基于 Ubuntu 22.04 主机。我们假定已获取好 Rockchip Linux SDK 及 矽慧通 X3300 相应的配置文档 / 配置文件。文中所述的开发板特指基于 RK3588 的 矽慧通 X3300。
 
 ## 需要准备的器材
 
 | 类别 | 器材名称 | 规格要求 | 数量 | 用途说明 |
 | - | - | - | - | - |
-| **核心设备** | XiUOS RK3588 | | 1 块 | 主要开发平台 |
+| **核心设备** | 矽慧通 X3300 | | 1 块 | 主要开发平台 |
 | **电源设备** | 电源适配器 | DC 9-36V | 1 个 | 供电 |
 | **调试工具** | USB 转串口模块 | 支持 1.5 Mbps 波特率 | 1 个 | 串口调试和日志输出 |
 | **连接线缆** | Type-C USB 线 | 数据线 | 1 条 | 连接 OTG 口用于烧录 |
@@ -24,7 +24,7 @@
 
 ---
 
-![xiuos_rk3588-interface-frontend](./img/xiuos_rk3588-interface-frontend.png)
+![sysoul_x3300-interface-frontend](./img/sysoul_x3300-interface-frontend.png)
 
 上图所示为开发板前侧接口，需要用到的有：
 
@@ -33,7 +33,7 @@
 
 ---
 
-![xiuos_rk3588-interface-backend](./img/xiuos_rk3588-interface-backend.png)
+![sysoul_x3300-interface-backend](./img/sysoul_x3300-interface-backend.png)
 
 上图所示为开发板后侧接口，需要用到的有：
 
@@ -49,7 +49,7 @@
 请使用规格匹配的电源适配器连接至开发板的 DC 电源接口，以确保供电稳定。该开发板支持 9-36V 宽压输入。正确连接电源后，开发板后侧上下两层的电源指示灯 PWR 均应亮起，如下图所示。
 
 <div align="center">
-  <img src="./img/xiuos_rk3588-poweron.png" height="300" alt="xiuos_rk3588-poweron"/>
+  <img src="./img/sysoul_x3300-poweron.png" height="300" alt="sysoul_x3300-poweron"/>
 </div>
 
 ### 串口连接
@@ -161,7 +161,7 @@ sed -i 's/CONFIG_BOOTDELAY=0/CONFIG_BOOTDELAY=10/g' u-boot/configs/rk3588_defcon
 
 ```sh
 export RK_ROOTFS_SYSTEM="debian"
-./build.sh xiuos_rk3588_defconfig && ./build.sh
+./build.sh sysoul_x3300_defconfig && ./build.sh
 ```
 
 编译结果为 `output/update/Image/update.img`。
@@ -257,7 +257,7 @@ Reset Device OK.
 
 此时，开发板将启动预装的 Debian 系统。可以将 HDMI 连接到显示器，稍等片刻即可看到图形化界面。
 
-![xiuos_rk3588-debian-desktop](./img/xiuos_rk3588-debian-desktop.png)
+![sysoul_x3300-debian-desktop](./img/sysoul_x3300-debian-desktop.png)
 
 同时，在串口终端中也能观察到完整的启动日志以及控制台。
 
@@ -347,7 +347,7 @@ cp "${ROCKCHIP_LINUX_SDK_DIR}/kernel/arch/arm64/boot/Image" "${TFTP_DIR}"
 
 #### 编译 device-tree
 
-将开发板的 dts (例如 `xiuos_rk3588.dts`) 复制一份，命名为 `zone0.dts`，并进行以下修改以划分资源给 GuestOS：
+将开发板的 dts (例如 `sysoul_x3300.dts`) 复制一份，命名为 `zone0.dts`，并进行以下修改以划分资源给 GuestOS：
 
 1.  **为 GuestOS 预留 CPU 核心**：
   hvisor 的设计中，root-linux 和 GuestOS 各使用一部分 CPU 核心。此处我们仅为 root-linux 保留 `cpu0` 和 `cpu1`。在设备树中找到其余的 `cpu` 节点，将其删去。
@@ -356,7 +356,7 @@ cp "${ROCKCHIP_LINUX_SDK_DIR}/kernel/arch/arm64/boot/Image" "${TFTP_DIR}"
   在 `memory` 节点的 `reserved-memory` 区域下，添加两块保留内存。一块用于 hvisor 本身，另一块用于 GuestOS 的物理内存。`no-map` 属性确保 root-linux 内核不会映射和使用这些区域。
 
   ```diff
-  --- a/xiuos_rk3588.dts
+  --- a/sysoul_x3300.dts
   +++ b/zone0.dts
   ...
   reserved-memory {
@@ -379,7 +379,7 @@ cp "${ROCKCHIP_LINUX_SDK_DIR}/kernel/arch/arm64/boot/Image" "${TFTP_DIR}"
   在根节点下添加一个设备节点，用于 hvisor 的 virtio 后端驱动与 root-linux 内核进行通信。中断号需要根据具体的硬件平台进行配置，此处配置为 `0x20`。
 
   ```diff
-  --- a/xiuos_rk3588.dts
+  --- a/sysoul_x3300.dts
   +++ b/zone0.dts
   ...
   };
@@ -416,7 +416,7 @@ git clone git@github.com:syswonder/hvisor.git
 cd hvisor
 cargo install cargo-binutils
 
-make BID=aarch64/xiuos-rk3588
+make BID=aarch64/sysoul-x3300
 cp target/aarch64-unknown-none/debug/hvisor.bin "${TFTP_DIR}"
 ```
 
@@ -462,7 +462,7 @@ setenv kernel_addr          0x09400000
 setenv root_linux_dtb_addr  0x10000000
 
 # 从 TFTP 服务器加载每个文件到对应的内存地址
-tftp  ${board_dtb_addr}       xiuos_rk3588.dtb
+tftp  ${board_dtb_addr}       sysoul_x3300.dtb
 tftp  ${hvisor_addr}          hvisor.bin
 tftp  ${kernel_addr}          Image
 tftp  ${root_linux_dtb_addr}  zone0.dtb
@@ -613,8 +613,8 @@ HVISOR_DIR="$HOME/hvisor"
 TFTP_DIR="/srv/tftp"
 
 cd "${HVISOR_DIR}"
-make BID=aarch64/xiuos-rk3588 dtb
-cp "${HVISOR_DIR}/platform/aarch64/xiuos-rk3588/image/dts/zone1-linux.dtb" "${TFTP_DIR}/zone1-linux.dtb"
+make BID=aarch64/sysoul-x3300 dtb
+cp "${HVISOR_DIR}/platform/aarch64/sysoul-x3300/image/dts/zone1-linux.dtb" "${TFTP_DIR}/zone1-linux.dtb"
 ```
 
 #### 下载 rootfs
@@ -656,13 +656,13 @@ ln "${ABSOLUTE_IMAGE_PATH}" "${TFTP_DIR}"
 - `zone1-linux.json`：用于定义 zone 本身的资源；
 - `zone1-linux-virtio.json`：用于定义其所需的 virtio 设备。
 
-`hvisor` 仓库中存放了本文对应的配置文件，位于 `platform/aarch64/xiuos-rk3588/configs/` 目录下，使用下面的命令将其复制到 TFTP 目录下。
+`hvisor` 仓库中存放了本文对应的配置文件，位于 `platform/aarch64/sysoul-x3300/configs/` 目录下，使用下面的命令将其复制到 TFTP 目录下。
 
 ```sh
 HVISOR_DIR="$HOME/hvisor"
 TFTP_DIR="/srv/tftp"
 
-cp "${HVISOR_DIR}/platform/aarch64/xiuos-rk3588/configs/*.json" "${TFTP_DIR}"
+cp "${HVISOR_DIR}/platform/aarch64/sysoul-x3300/configs/*.json" "${TFTP_DIR}"
 ```
 
 ### 启动 zone1-linux
