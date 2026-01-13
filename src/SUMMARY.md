@@ -111,7 +111,10 @@
     - [Console](./chap04/subchap03/VirtIO/ConsoleDevice.md)
     - [GPU](./chap04/subchap03/VirtIO/GPUDevice.md)
 
-- [PCI 虚拟化](./chap04/subchap03/PCI-Virtualization.md)
+- [PCI 虚拟化](./chap04/subchap03/PCIE/PCI-Virtualization.md)
+    - [pcie实现](./chap04/subchap03/PCIE/pcie_coding.md)
+    - [pcie配置](./chap04/subchap03/PCIE/pcie_setup.md)
+    - [虚拟pcie设备](./chap04/subchap03/PCIE/virt_pcie_dev.md)
 
 - [Hvisor 管理工具](./chap04/subchap04/ManageTools.md)
   

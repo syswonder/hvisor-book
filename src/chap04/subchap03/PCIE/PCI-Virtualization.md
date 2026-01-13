@@ -1,0 +1,13 @@
+# PCIE Virtualization
+
+## Hvisor支持的pcie架构
+ecam：qemu/x86往往采用该架构，pcie域地址直接映射到cpu域地址上；
+
+dwc：部分arm64/riscv板卡采用designware core的ip核以实现pcie功能，pcie域地址通过atu映射到cpu域的特定地址上；
+
+loongarch64：龙芯的pcie实现方式，部分设备和地址有特殊的处理方式；
+
+## 概述
+Hvisor pcie虚拟化支持将pcie总线的上的设备以设备粒度在各个zone间分配。其核心逻辑是将pcie系统中难以控制的在运行时确定的bdf，mem等信息在el2进行固化，在各个zone的内核访问pcie配置空间时用hvisor的模拟进行代替，并借助二阶段地址映射将大部分固定的资源直通给zone以保证pcie虚拟化的性能。对于部分复杂的pcie系统，pcie虚拟化支持direct模式，即让root linux对系统资源进行初始化，以减轻板卡适配的负担。
+
+Hvisor pcie虚拟化也支持创建虚拟pcie设备以实现自定义的功能。
