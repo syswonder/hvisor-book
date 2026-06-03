@@ -64,7 +64,10 @@
 - [命令行工具](./chap03/CMDTools.md)
 
 - [VirtIO 的使用](./chap03/VirtIOUseage.md)
+
 - [共享内存通信 IVC 的使用](./chap03/IVC.md)
+
+- [hvisor Kconfig 配置体系](./chap03/Kconfig.md)
 
 # hvisor架构与实现
 
