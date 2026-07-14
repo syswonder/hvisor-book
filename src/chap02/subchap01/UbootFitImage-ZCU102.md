@@ -74,7 +74,7 @@ gen-fit: $(hvisor_bin) dtb
 
 <div class="warning">
     <h3>请注意</h3>
-    <p> 不要将已经由 UBOOT 打包的 Image 传入 its 源文件，否则会导致 <b>二次打包</b>！因为 its 中指向的文件应为原始文件（vmlinux 等），mkimage 在导入 its 时对逐个文件进行打包处理（vmlinux->"Image"，然后内嵌到 fitImage）
+    <p>不要将已经由 UBOOT 打包的 Image 传入 its 源文件，否则会导致 <b>二次打包</b>！因为 its 中指向的文件应为原始文件（vmlinux 等），mkimage 在导入 its 时对逐个文件进行打包处理（vmlinux-&gt;"Image"，然后内嵌到 fitImage）。</p>
 </div>
 
 ## 在 petalinux qemu 中通过 FIT 镜像启动 hvisor 和 root linux
