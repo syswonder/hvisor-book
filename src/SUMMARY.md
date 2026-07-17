@@ -118,6 +118,7 @@
     - [Net](./chap04/subchap03/VirtIO/NetDevice.md)
     - [Console](./chap04/subchap03/VirtIO/ConsoleDevice.md)
     - [GPU](./chap04/subchap03/VirtIO/GPUDevice.md)
+    - [SCMI](./chap04/subchap03/VirtIO/SCMI-Virtio.md)
 
 - [PCI 虚拟化](./chap04/subchap03/PCIE/PCI-Virtualization.md)
     - [pcie实现](./chap04/subchap03/PCIE/pcie_coding.md)
