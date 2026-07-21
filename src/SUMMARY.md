@@ -42,7 +42,7 @@
 
 - [基于 RK3588 的 矽慧通 X3300 快速上手 (Android 虚拟机)](./chap02/SYSOUL-X3300_Android.md)
 
-- [基于 RK3568 的 Dayu200 快速上手 (Openharmony 虚拟机)](./chap02/Dayu200-OpenHarmony.md)
+- [基于 RK3568 的 Dayu200 快速上手 (OpenHarmony 虚拟机)](./chap02/Dayu200-OpenHarmony.md)
 
 - [Phytium-pi hvisor 快速上手](./chap02/Phytium-pi.md)
 
