@@ -190,16 +190,14 @@ make ARCH=x86_64 BOARD=qemu run
 
 <div class="warning">
     <h3>请注意</h3>
-    <p> 
-若执行 `make BOARD=qemu run` 遇到如下报错：
+    <p>若执行 <code>make BOARD=qemu run</code> 遇到如下报错：</p>
 
 ```
 Could not access KVM kernel module: Permission denied
 qemu-system-x86_64: -accel kvm: failed to initialize kvm: Permission denied
 ```
 
-执行 `sudo usermod -a -G kvm 你的用户名` 加入 kvm 的用户组，重启终端后再次尝试。
-    </p>
+    <p>执行 <code>sudo usermod -a -G kvm 你的用户名</code> 加入 kvm 的用户组，重启终端后再次尝试。</p>
 </div>
 
 ## 八、使用 hvisor-tool 运行 zone1 Linux

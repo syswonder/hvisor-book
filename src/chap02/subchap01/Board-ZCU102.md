@@ -46,7 +46,7 @@ petalinux-boot --jtag --prebuilt 2
 
 <div class="warning">
     <h3>请注意</h3>
-    <p> 由于 petalinux 规定了一些固定内存地址，如 linux kernel、fitImage、DTB 的默认加载地址（可在 petalinux 编译工程时配置），由于我们需要加载启动自制的 fitImage，目前发现的问题是如果 root linux dtb 在 its 中所写的加载地址和 petalinux 编译时的加载地址一致，会导致该 dtb 被覆盖为默认的 petalinux dtb，从而导致root linux接受到错误的 dtb 而无法启动。因此需要在编译时指定和 petalinux 默认 dtb/fitImage 加载地址不同的地址，以防止出现其他问题。
+    <p>由于 petalinux 规定了一些固定内存地址，如 linux kernel、fitImage、DTB 的默认加载地址（可在 petalinux 编译工程时配置），由于我们需要加载启动自制的 fitImage，目前发现的问题是如果 root linux dtb 在 its 中所写的加载地址和 petalinux 编译时的加载地址一致，会导致该 dtb 被覆盖为默认的 petalinux dtb，从而导致root linux接受到错误的 dtb 而无法启动。因此需要在编译时指定和 petalinux 默认 dtb/fitImage 加载地址不同的地址，以防止出现其他问题。</p>
 </div>
 
 # 参考文献
