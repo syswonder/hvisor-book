@@ -69,5 +69,8 @@ static inline __u64 hvisor_call(__u64 code, __u64 arg0, __u64 arg1) {
 | 4    | hv_zone_list         | arg0：表示虚拟机信息的数据结构地址；arg1：虚拟机信息的数量 | 用于root zone查看整个系统所有虚拟机信息       |
 | 5    | hv_ivc_info          | arg0：ivc信息的起始地址                                    | 用于一个zone查看自己所在的通信域信息          |
 | 6    | hv_zone_config_check | arg0：magic_version，hvisor-tool的版本号所在地址（虚拟机物理地址）| 用于检查hvisor-tool和hvisor是否兼容，通过两者的版本号确定 |
-| 20    | send_event          | 无                                                        | 向所有nonroot zone发送“清除中断注入位”IPI事件，停止对应CPU上的中断注入 |
-| 86    | hv_virtio_get_irq    | arg0：需要写入IRQ号的地址                                  | 用于root zone获取hvisor tool可用的IRQ号（仅x86_64使用）|
+| 7    | hv_virtio_pci        | arg0：操作模式；arg1：Virtio PCI共享区域地址（初始化模式使用） | 初始化或通知Virtio PCI通信跳板 |
+| 8    | hv_zone_set_boot_mode | arg0：HvZoneBootMode地址；arg1：结构体大小                    | 为non-root zone设置启动模式 |
+| 9    | hv_get_ecam_base     | arg0：用于写回ECAM基地址的地址                              | 获取root zone PCI ECAM基地址 |
+| 11   | hv_virtio_deassert_irq | arg0：目标zone ID；arg1：Virtio IRQ号                      | 清除指定zone的指定Virtio中断线 |
+| 86   | hv_virtio_get_irq    | arg0：需要写入IRQ号的地址                                  | 用于root zone获取hvisor tool可用的IRQ号（仅x86_64使用）|
