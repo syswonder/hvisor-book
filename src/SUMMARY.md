@@ -50,6 +50,8 @@
 
 - [FPGA 香山昆明湖快速上手](./chap02/FPGA-XiangShan.md)
 
+- [SpaceMiT K3-COM260 快速上手](./chap02/K3-COM260.md)
+
 
 # hvisor 使用手册
 
