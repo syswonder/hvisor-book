@@ -16,6 +16,7 @@
 - [x] Milk-V Megrez
 - [x] Sifive Hifive Premier P550
 - [x] FPGA 香山（昆明湖）on S2C Prodigy S7-19PS-2
+- [x] SpaceMiT K3-COM260
 
 ## loongarch64
 
