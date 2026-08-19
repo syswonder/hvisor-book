@@ -7,6 +7,6 @@
 本地部署：
 
 ```bash
-cargo install mdbook
+cargo install --version 0.4.36 mdbook
 mdbook serve --open
 ```
