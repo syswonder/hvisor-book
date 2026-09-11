@@ -730,3 +730,141 @@ screen /dev/pts/0
 > `minicom` 和 `screen` 的默认转义键都是 `Ctrl` + `A`。因此，当在 `minicom` 窗口中与 `screen` 会话交互时，需要先发送一个转义字符给 `minicom`，再将下一个 `Ctrl` + `A` 传递给 `screen`。
 >
 > - **分离 `screen` 会话的步骤**：依次按下 `Ctrl` + `A`，`Ctrl` + `A`，`D`。
+
+---
+
+## 外设接口对应的设备树节点
+
+### USB
+
+X3300 的 USB 由 **1 个 USB3 OTG（Type-C）、1 个 USB3 Host、2 组 USB2 Host** 构成，
+对应控制器与 PHY 节点如下：
+
+| 功能 | 设备树节点 | 说明 |
+|---|---|---|
+| USB3 OTG（Type-C，烧录口） | `usb@fc000000`（`snps,dwc3`） | `dr_mode = "otg"`，中断 SPI 0xdc，含 `quirk-skip-phy-init` 等；物理层 = `usb2phy0`（`syscon@fd5d0000` 内 `usb2-phy@0` 的 `otg-port`）提供 USB2 通路 + `phy@fed80000`（USBDP combo PHY0，`usbdp0`）的 `u3-port` 提供 USB3 通路 |
+| USB3 Host | `usb@fcd00000`（`snps,dwc3`） | `dr_mode = "host"`，中断 SPI 0xde；USB3 PHY = `phy@fee20000`（`rockchip,rk3588-naneng-combphy`，即 USB3/PCIe combo PHY2，refclk 100 MHz） |
+| USB2 Host0（EHCI+OHCI） | `usb@fc800000` / `usb@fc840000` | 中断 SPI 0xd7/0xd8；`clocks` 含 `usbhost/arbiter`（CRU）+ `utmi`（来自 usb2phy）；PHY = `syscon@fd5d8000` 内 `usb2-phy@8000` 的 `host-port` |
+| USB2 Host1（EHCI+OHCI） | `usb@fc880000` / `usb@fc8c0000` | 中断 SPI 0xda/0xdb；PHY = `syscon@fd5dc000` 内 `usb2-phy@c000` 的 `host-port` |
+| USB2 PHY 寄存器 | `syscon@fd5d0000` / `fd5d8000` / `fd5dc000` | `rockchip,rk3588-usb2phy-grf`，各含一个 `rockchip,rk3588-usb2phy` 子节点 |
+| USB3 combo PHY 寄存器 | `syscon@fd5c8000`（usbdpphy-grf） | USBDP PHY0/1 = `phy@fed80000`、`phy@fed90000`（aliases `usbdp0/1`） |
+
+电源域：上述控制器均挂在 USB 电源域（`power-domains = <&power 0x1f>`）下。
+USB2 Host 各口的 `utmi` 时钟由对应 usb2phy 以 0-cell 时钟输出提供。
+
+### 串口（UART）
+
+| 功能 | 设备树节点 | 说明 |
+|---|---|---|
+| 调试串口（板载 DEBUG 口） | `fiq-debugger` 节点 | `rockchip,serial-id = <2>` → 复用 `serial@feb50000`（UART2，`0xfeb50000`）；波特率 1500000；内核 console 为 `ttyFIQ0`，`chosen.bootargs` 同时给出 `earlycon=uart8250,mmio32,0xfeb50000` 早期打印 |
+| UART0 | `serial@fd890000` | 中断 SPI 0x14c；alias `serial0` |
+| UART1~9 | `serial@feb40000` ~ `serial@febc0000` | alias `serial1`~`serial9`；各节点含 `baudclk/apb_pclk` 时钟、DMA（`dmas`）与对应 pinmux |
+
+> 注意：原厂树中 `serial@feb50000`（UART2 自身）为 `disabled`，调试串口由 FIQ debugger 以 FIQ 方式独占，普通 UART 驱动不再注册该口
+
+### 以太网（GMAC）
+
+| 功能 | 设备树节点 | 说明 |
+|---|---|---|
+| ETH1（千兆，板载唯一网口） | `ethernet@fe1c0000`（alias `ethernet1`） | `rockchip,rk3588-gmac` + `snps,dwmac-4.20a`；`phy-mode = "rgmii-rxid"`，`clock_in_out = "output"`（MAC 输出 125M 参考时钟）；复位脚 `reset-gpio = <&gpio3 RK_PA7 ...>`（`gpio@fec40000` 第 15 脚）；中断 `macirq` SPI 0xea；电源域 `power-domains = <&power 0x21>` |
+| ETH0（未用） | `ethernet@fe1b0000`（alias `ethernet0`） | gmac0，本板未使能 |
+
+时钟：`stmmaceth / clk_mac_ref / pclk_mac / aclk_mac / ptp_ref` 均由 CRU 提供；
+PHY 挂在 MAC 节点的 MDIO 子节点下（RGMII，板载 PHY）。
+
+### 音频（3.5mm 口）
+
+| 功能 | 设备树节点 | 说明 |
+|---|---|---|
+| 音频编解码器 | `i2c3`（`i2c@feab0000`）上的 `es8311@19` | Everest ES8311（地址 0x19，`status = "okay"`）；MCLK = `mclkout_i2s0`（12.288 MHz，CRU clk-out），pinmux `i2s0_mclk`；增益参数 `adc-pga-gain/adc-volume/dac-volume` |
+| I2S 数据口 | `i2s@fe470000`（`i2s0_8ch`） | `rockchip,rk3588-i2s-tdm`，与 codec 的 `sound-dai` 对接 |
+| 声卡 | `i2s0-sound` | `simple-audio-card`，名 `"rockchip,es8311"`：cpu=`i2s0_8ch`，codec=`es8311` |
+
+功能要点（依据 es8311 驱动 DAPM）：
+- **播放**：MONO DAC → DIFFERENTIAL OUT（差分输出，接 3.5mm 输出端）；
+- **录音**：MONO ADC，AMIC/DMIC 可选（板上为模拟麦克风输入），PGA 最大 18 dB，`aec-mode = "adc left, adc right"`；
+- 支持**同时录放**（全双工），但驱动 DAPM 每方向为单声道；3.5mm 口无插入检测。
+
+### HDMI
+
+| 功能 | 设备树节点 | 说明 |
+|---|---|---|
+| HDMI0 输出 | `hdmi@fde80000`（alias `hdmi0`） | `rockchip,rk3588-dw-hdmi`；5 路中断（含 HPD）；时钟 `pclk/hpd/earc/hdmitx_ref/aud/dclk_vp0..3/hclk_vo1/link_clk`；`power-domains = <&power 0x1a>`；`status = "okay"`；`enable-gpios` 为 HDMI 5V 使能脚 |
+| HDMI0 PHY | `hdmiphy@fed60000` | `rockchip,rk3588-hdptx-phy-hdmi`，经 `phys = <&hdmiphy>` 接入 HDMI0 |
+| HDMI1（未用） | `hdmi@fdea0000`（alias `hdmi1`） | 本板未接出 |
+
+视频源：`vop@fdd90000`（VOP2）的 video port 经 `ports/port@0/endpoint@2`（`remote-endpoint`）接到 `hdmi@fde80000`；HDMI 同时是 `#sound-dai-cells = <0>` 的音频输出端点（HDMI 音频走 I2S，配 `hdmi0-sound` 声卡）。
+
+### DSI（MIPI 屏）
+
+| 功能 | 设备树节点 | 说明 |
+|---|---|---|
+| DSI0 | `dsi@fde20000`（alias `dsi0`） | `rockchip,rk3588-mipi-dsi2`；PHY = `phy@feda0000`（MIPI DCPHY0）；电源域 `power-domains = <&power 0x18>`；`status = "okay"`；`port@0` 接 VOP2，`port@1` 接 panel |
+| DSI0 面板 | `dsi@fde20000/panel@0` | `simple-panel-dsi`，4 lane（`dsi,lanes = <4>`），含 `panel-init-sequence`；背光 = `backlight`（PWM，`pwm-backlight`，默认亮度 200/255） |
+| DSI1 | `dsi@fde30000`（alias `dsi1`） | 第二路 MIPI DSI（本板为副屏/扩展用途） |
+| 显示控制器 | `vop@fdd90000` | VOP2，多 video port 分别路由到 HDMI0/DSI0/DSI1/DP 等 |
+
+> 实践提示：本文书其余章节中，root/zone1/zone2 各自的设备树均由本原厂树裁剪而来
+> ——不同 zone 会裁剪掉不属于自己的控制器（例如 zone2 拿走显示/触摸/USB 通路后，
+> 原厂树里的 `i2c@feab0000`（音频 codec 所在）与 `i2s0-sound` 在 zone2 侧均被
+> `disabled`，音频控制器未划入任何 zone，见"外设划分"相关讨论）。
+
+---
+
+## RKLLM 的 CPU 绑定：RKLLMParam / RKLLMExtendParam
+
+### 背景
+
+RKLLM 的推理主体跑在 NPU 上（`librkllmrt.so` 内嵌 ggml + NPU 算子），但运行时
+需要若干 **CPU 线程**做调度、embedding、采样等辅助工作。runtime 内部按
+**目标平台 profile** 决定使用多少 CPU、把线程绑到哪些核：
+
+- 报错线索一：`The number of enabled CPUs must be greater than or equal to the number of NPU cores`；
+- 报错线索二：`Mismatch between enabled CPUs mask and expected count. Please check the configuration.`；
+- 启动日志：`Enabled cpus: [...]` / `Enabled cpus num: N`（N 由模型/平台决定，RK3588 为 4）；
+- 绑核失败时：`error: set affinity failed`（线程降级为不绑定，仍可运行，属噪音）。
+
+CPU 数量/掩码可在 **`rkllm_init()` 前**通过参数结构体显式指定。
+
+### 参数结构
+
+```c
+typedef struct {
+    const char* model_path;      // 模型文件
+    int32_t  max_context_len;    // 上下文窗口
+    int32_t  max_new_tokens;     // 单次生成上限
+    int32_t  top_k, n_keep;
+    float    top_p, temperature;
+    float    repeat_penalty, frequency_penalty, presence_penalty;
+    int32_t  mirostat, ...;
+    bool     skip_special_token, ignore_eos_token;
+    bool     is_async;
+    RKLLMExtendParam extend_param;   // ← CPU 绑定在这里
+} RKLLMParam;
+
+typedef struct {
+    int32_t  base_domain_id;
+    int8_t   embed_flash;
+    int8_t   enabled_cpus_num;    // 允许 runtime 使用的 CPU 数量（0 = 自动）
+    uint32_t enabled_cpus_mask;   // 允许的 CPU 位图（0 = 自动）
+    uint8_t  n_batch;             // >1 开启 batch 推理
+    int8_t   use_cross_attn;
+    uint8_t  reserved[104];
+} RKLLMExtendParam;
+```
+
+官方推荐的初始化流程：`rkllm_createDefaultParam()` 取默认值 → 改需要的字段 →
+`rkllm_init(&handle, &param, callback)`。
+
+### hvisor 多 zone 场景下的坑
+
+zone 内的 Linux 只看到**从 0 开始的逻辑核**（例如 zone1 拿物理核 4-7，guest 内为
+cpu0-3）。而 runtime 的自动枚举与官方 server 的 `0xF0` 都按**物理核号 4-7** 绑核：
+
+```text
+rkllm: Enabled cpus: [4, 5, 6, 7]
+error: set affinity failed # guest 内不存在 cpu4-7，绑核失败（降级为不绑）
+```
+
+绑核失败不影响正确性（线程不绑照跑），但在 zone 环境下属于可消除的噪音与不确定因素。
+**正确做法：显式传逻辑核掩码。**
